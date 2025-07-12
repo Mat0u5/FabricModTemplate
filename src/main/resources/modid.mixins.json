@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.example.mixin",
+	"package": "net.mat0u5.modid.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ExampleMixin"
