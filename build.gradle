@@ -33,7 +33,7 @@ dependencies {
 
 loom {
 	runConfigs.all {
-		ideConfigGenerated true
+		//ideConfigGenerated true
 		runDir "../../run"
 	}
 }
