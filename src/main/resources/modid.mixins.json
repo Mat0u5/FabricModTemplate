@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "net.mat0u5.modid.mixin",
-	"compatibilityLevel": "JAVA_25",
+	"compatibilityLevel": "${javaVersion}",
 	"mixins": [
 		"ExampleMixin"
 	],
