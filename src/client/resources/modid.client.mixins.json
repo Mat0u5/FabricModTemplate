@@ -1,9 +1,11 @@
 {
 	"required": true,
-	"package": "net.mat0u5.modid.mixin",
-	"compatibilityLevel": "JAVA_21",
-	"mixins": [
+	"package": "net.mat0u5.modid.mixin.client",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
 		"ExampleMixin"
+	],
+	"mixins": [
 	],
 	"injectors": {
 		"defaultRequire": 1
