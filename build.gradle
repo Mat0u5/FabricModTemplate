@@ -14,11 +14,11 @@ repositories {
 }
 
 loom {
-	//splitEnvironmentSourceSets()
+	splitEnvironmentSourceSets()
 	mods {
 		"modid" {
 			sourceSet sourceSets.main
-			//sourceSet sourceSets.client
+			sourceSet sourceSets.client
 		}
 	}
 }
