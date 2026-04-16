@@ -1,4 +1,4 @@
-package net.mat0u5.fabric.client;
+package net.mat0u5.modid.fabric.client;
 
 import net.fabricmc.api.ClientModInitializer;
 

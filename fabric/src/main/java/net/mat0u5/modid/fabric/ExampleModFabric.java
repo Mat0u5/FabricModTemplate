@@ -1,8 +1,8 @@
-package net.mat0u5.fabric;
+package net.mat0u5.modid.fabric;
 
 import net.fabricmc.api.ModInitializer;
 
-import net.mat0u5.fabriclike.ExampleModFabricLike;
+import net.mat0u5.modid.fabriclike.ExampleModFabricLike;
 
 public final class ExampleModFabric implements ModInitializer {
     @Override

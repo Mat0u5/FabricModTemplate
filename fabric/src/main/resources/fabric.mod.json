@@ -16,10 +16,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.mat0u5.fabric.ExampleModFabric"
+      "net.mat0u5.modid.fabric.ExampleModFabric"
     ],
     "client": [
-      "net.mat0u5.fabric.client.ExampleModFabricClient"
+      "net.mat0u5.modid.fabric.client.ExampleModFabricClient"
     ]
   },
   "mixins": [

@@ -1,8 +1,8 @@
-package net.mat0u5.neoforge;
+package net.mat0u5.modid.neoforge;
 
 import net.neoforged.fml.common.Mod;
 
-import net.mat0u5.ExampleMod;
+import net.mat0u5.modid.ExampleMod;
 
 @Mod(ExampleMod.MOD_ID)
 public final class ExampleModNeoForge {
