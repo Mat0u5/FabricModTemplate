@@ -27,7 +27,7 @@
     "modid-common.mixins.json"
   ],
   "depends": {
-    "minecraft": "~1.20.4",
+    "minecraft": "${target_version}",
     "java": ">=17",
     "fabric-api": "*"
   },
