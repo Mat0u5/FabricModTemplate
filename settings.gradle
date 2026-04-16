@@ -11,7 +11,5 @@ rootProject.name = 'modid'
 
 include 'common'
 include 'fabric'
-include 'fabric-like'
 include 'forge'
 include 'neoforge'
-include 'quilt'
