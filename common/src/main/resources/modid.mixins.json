@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "net.modid.mixin.forge",
+  "package": "net.mat0u5.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
