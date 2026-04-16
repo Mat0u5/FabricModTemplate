@@ -23,10 +23,10 @@
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "modid.mixins.json",
+    "modid-common.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.19.2",
     "minecraft": "~1.20.4",
     "java": ">=17",
     "fabric-api": "*"

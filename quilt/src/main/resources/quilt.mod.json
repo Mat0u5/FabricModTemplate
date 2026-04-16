@@ -34,6 +34,7 @@
     ]
   },
   "mixin": [
-    "modid.mixins.json"
+    "modid.mixins.json",
+    "modid-common.mixins.json"
   ]
 }

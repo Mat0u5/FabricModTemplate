@@ -28,4 +28,7 @@ ordering = "NONE"
 side = "BOTH"
 
 [[mixins]]
+config = "modid-common.mixins.json"
+
+[[mixins]]
 config = "modid.mixins.json"
