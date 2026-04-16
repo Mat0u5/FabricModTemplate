@@ -28,7 +28,7 @@
   ],
   "depends": {
     "minecraft": "${target_version}",
-    "java": ">=17",
+    "java": ">=21",
     "fabric-api": "*"
   },
   "suggests": {
