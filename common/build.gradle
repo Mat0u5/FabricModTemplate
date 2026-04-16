@@ -6,6 +6,10 @@ loom {
     accessWidenerPath = file("src/main/resources/modid.accesswidener")
 }
 
+configurations {
+    clientImplementation.extendsFrom implementation
+    clientRuntimeOnly.extendsFrom runtimeOnly
+}
 
 dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,

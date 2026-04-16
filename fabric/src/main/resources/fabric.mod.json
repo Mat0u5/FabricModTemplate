@@ -19,7 +19,7 @@
       "net.mat0u5.modid.fabric.ExampleModFabric"
     ],
     "client": [
-      "net.mat0u5.modid.fabric.client.ExampleModFabricClient"
+      "net.mat0u5.modid.fabric.ExampleModFabricClient"
     ]
   },
   "mixins": [

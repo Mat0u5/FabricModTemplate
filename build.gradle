@@ -31,7 +31,24 @@ subprojects {
         // for more information about repositories.
     }
 
+    sourceSets {
+        client {
+            // This makes 'client' see 'main'
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.runtimeClasspath
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+        }
+    }
+
     loom {
+        // This makes sure the "Run Client" button in your IDE sees the client folder
+        runs {
+            client {
+                client()
+                source sourceSets.client
+            }
+        }
         silentMojangMappingsLicense()
     }
 

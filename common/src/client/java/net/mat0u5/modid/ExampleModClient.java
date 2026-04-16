@@ -1,0 +1,9 @@
+package net.mat0u5.modid;
+
+public final class ExampleModClient {
+    public static final String MOD_ID = "modid";
+
+    public static void init() {
+        System.out.println("Example Mod Init! CLIENT");
+    }
+}

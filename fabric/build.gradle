@@ -27,7 +27,7 @@ configurations {
         canBeConsumed = false
     }
 }
-
+def commonClient = project(":common").sourceSets.client
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
@@ -36,6 +36,7 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+    implementation commonClient.output
 }
 
 processResources {
@@ -51,6 +52,12 @@ processResources {
 shadowJar {
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
+
+    from sourceSets.main.output
+    from sourceSets.client.output
+
+    from project(":common").sourceSets.main.output
+    from project(":common").sourceSets.client.output
 }
 
 remapJar {
