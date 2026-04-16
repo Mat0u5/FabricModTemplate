@@ -1,6 +1,6 @@
-package net.examplemod.fabric;
+package net.modid.fabric;
 
-import net.examplemod.fabriclike.ExampleModFabricLike;
+import net.modid.fabriclike.ExampleModFabricLike;
 import net.fabricmc.api.ModInitializer;
 
 public class ExampleModFabric implements ModInitializer {

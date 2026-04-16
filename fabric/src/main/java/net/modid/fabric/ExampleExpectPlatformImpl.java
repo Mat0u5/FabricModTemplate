@@ -1,7 +1,7 @@
-package net.examplemod.fabric;
+package net.modid.fabric;
 
-import net.examplemod.ExampleExpectPlatform;
-import org.quiltmc.loader.api.QuiltLoader;
+import net.modid.ExampleExpectPlatform;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;
 
@@ -10,6 +10,6 @@ public class ExampleExpectPlatformImpl {
      * This is our actual method to {@link ExampleExpectPlatform#getConfigDirectory()}.
      */
     public static Path getConfigDirectory() {
-        return QuiltLoader.getConfigDir();
+        return FabricLoader.getInstance().getConfigDir();
     }
 }

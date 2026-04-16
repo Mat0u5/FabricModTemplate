@@ -1,6 +1,6 @@
-package net.examplemod.quilt;
+package net.modid.quilt;
 
-import net.examplemod.fabriclike.ExampleModFabricLike;
+import net.modid.fabriclike.ExampleModFabricLike;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 

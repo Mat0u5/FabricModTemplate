@@ -1,20 +1,18 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
-#issueTrackerURL = ""
+loaderVersion = "[1,)"
 license = "Insert License Here"
 
 [[mods]]
 modId = "modid"
 version = "${version}"
-displayName = "Example Mod"
+displayName = "Example Mod (NeoForge)"
 authors = "Me!"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+This is the NeoForge version of my mod!
 '''
-#logoFile = ""
 
 [[dependencies.modid]]
-modId = "forge"
+modId = "neoforge"
 mandatory = true
 versionRange = "[47,)"
 ordering = "NONE"
@@ -33,3 +31,9 @@ mandatory = true
 versionRange = "[9.1.12,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[mixins]]
+config = "modid-common.mixins.json"
+
+[[mixins]]
+config = "modid.mixins.json"
