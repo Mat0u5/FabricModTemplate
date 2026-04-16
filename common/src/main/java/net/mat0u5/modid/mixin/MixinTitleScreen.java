@@ -8,8 +8,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TitleScreen.class)
 public class MixinTitleScreen {
+    private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("ModID");
+
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
-        System.out.println("Hello from example architectury common mixin!");
+        LOGGER.info("Hello from example architectury common mixin!");
     }
 }
