@@ -7,9 +7,9 @@ license = "Insert License Here"
 modId = "modid"
 version = "${version}"
 displayName = "ModId"
-authors = "Me!"
+authors = "Mat0u5"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+TODO modid description
 '''
 #logoFile = ""
 

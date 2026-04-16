@@ -3,15 +3,15 @@
   "id": "modid",
   "version": "${version}",
   "name": "ModId",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "TODO modid description",
   "authors": [
-    "Me!"
+    "Mat0u5"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/Mat0u5/ModId"
   },
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/modid/icon.png",
   "environment": "*",
   "entrypoints": {

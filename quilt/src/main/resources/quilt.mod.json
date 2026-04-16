@@ -6,9 +6,9 @@
     "version": "${version}",
     "metadata": {
       "name": "ModId",
-      "description": "This is an example description! Tell everyone what your mod is about!",
+      "description": "TODO modid description",
       "contributors": {
-        "Me!": "Author"
+        "Mat0u5": "Author"
       },
       "icon": "assets/modid/icon.png"
     },
