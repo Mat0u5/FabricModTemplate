@@ -60,6 +60,7 @@ shadowJar {
     from sourceSets.main.output
     from sourceSets.client.output
 
+    from project(":common").sourceSets.main.output
     from project(":common").sourceSets.client.output
 }
 

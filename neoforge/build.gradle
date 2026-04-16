@@ -47,7 +47,7 @@ processResources {
     inputs.property 'version', project.version
     inputs.property "target_version", rootProject.target_version
 
-    filesMatching('META-INF/mods.toml') {
+    filesMatching('META-INF/neoforge.mods.toml') {
         expand version: inputs.properties.version,
                 "target_version": rootProject.target_version_forge
     }
@@ -60,6 +60,7 @@ shadowJar {
     from sourceSets.main.output
     from sourceSets.client.output
 
+    from project(":common").sourceSets.main.output
     from project(":common").sourceSets.client.output
 }
 
