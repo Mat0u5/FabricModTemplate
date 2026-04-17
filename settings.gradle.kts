@@ -5,6 +5,8 @@ pluginManagement {
 		gradlePluginPortal()
 		maven("https://maven.fabricmc.net/") { name = "Fabric" }
 		maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
+		maven("https://maven.minecraftforge.net/") { name = "Forge" }
+		maven("https://repo.spongepowered.org/repository/maven-public/") { name = "Sponge" }
 		maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
 		maven("https://maven.kikugie.dev/releases") { name = "KikuGie Releases" }
 		maven("https://maven.parchmentmc.org") { name = "ParchmentMC" }
@@ -31,14 +33,21 @@ stonecutter {
 				} else {
 					"build.$loader.gradle.kts"
 				}
+				/*
+				val buildscriptName = when {
+					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
+					loader == "forge" && (version.startsWith("1.21") || version.startsWith("26")) -> "build.forge21.gradle.kts"
+					else -> "build.$loader.gradle.kts"
+				}
+				 */
 
 				version("$version-$loader", version).buildscript = buildscriptName
 			}
 		}
 
-		match("26.1", "fabric", "neoforge", "forge")
-		match("1.21.7", "fabric", "neoforge", "forge")
-		match("1.21.1", "fabric", "neoforge", "forge")
+		match("26.1", "fabric", "neoforge")
+		match("1.21.7", "fabric", "neoforge")
+		match("1.21.1", "fabric", "neoforge")
 		match("1.19.2", "fabric", "forge")
 
 		vcsVersion = "1.21.7-fabric"
