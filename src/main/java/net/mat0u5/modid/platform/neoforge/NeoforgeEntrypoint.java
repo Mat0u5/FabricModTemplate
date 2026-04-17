@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.neoforge;
+package net.mat0u5.modid.platform.neoforge;
 
 //? neoforge {
 
-/*import com.example.modtemplate.ModTemplate;
+/*import net.mat0u5.modid.ModTemplate;
 import net.neoforged.fml.common.Mod;
 
 @Mod(ModTemplate.MOD_ID)

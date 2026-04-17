@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.neoforge;
+package net.mat0u5.modid.platform.neoforge;
 
 //? neoforge {
 
-/*import com.example.modtemplate.event.ExampleEventHandler; // sample_content
+/*import net.mat0u5.modid.event.ExampleEventHandler; // sample_content
 import net.minecraft.server.level.ServerPlayer; // sample_content
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

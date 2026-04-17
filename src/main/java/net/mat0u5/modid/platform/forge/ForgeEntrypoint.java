@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.forge;
+package net.mat0u5.modid.platform.forge;
 
 //? forge {
 
-/*import com.example.modtemplate.ModTemplate;
+/*import net.mat0u5.modid.ModTemplate;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod(ModTemplate.MOD_ID)

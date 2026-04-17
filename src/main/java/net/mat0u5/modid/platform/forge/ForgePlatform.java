@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.forge;
+package net.mat0u5.modid.platform.forge;
 
 //? forge {
 
-/*import com.example.modtemplate.platform.Platform;
+/*import net.mat0u5.modid.platform.Platform;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 

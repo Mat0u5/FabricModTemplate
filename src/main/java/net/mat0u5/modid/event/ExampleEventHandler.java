@@ -1,9 +1,7 @@
-package com.example.modtemplate.event;
+package net.mat0u5.modid.event;
 
-import com.example.modtemplate.ModTemplate;
+import net.mat0u5.modid.ModTemplate;
 import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Objects;
 
 public class ExampleEventHandler {
 

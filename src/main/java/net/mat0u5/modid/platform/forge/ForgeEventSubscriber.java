@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.forge;
+package net.mat0u5.modid.platform.forge;
 
 //? forge {
 
-/*import com.example.modtemplate.event.ExampleEventHandler; // sample_content
+/*import net.mat0u5.modid.event.ExampleEventHandler; // sample_content
 import net.minecraft.server.level.ServerPlayer; // sample_content
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

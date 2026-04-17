@@ -1,4 +1,4 @@
-package com.example.modtemplate.platform.fabric.datagen;
+package net.mat0u5.modid.platform.fabric.datagen;
 
 //? fabric {
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;

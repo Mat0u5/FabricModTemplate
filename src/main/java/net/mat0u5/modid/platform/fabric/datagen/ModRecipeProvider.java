@@ -1,13 +1,12 @@
-package com.example.modtemplate.platform.fabric.datagen;
+package net.mat0u5.modid.platform.fabric.datagen;
 
 //? fabric && != 1.19.2 {
 
-import com.example.modtemplate.ModTemplate;
+import net.mat0u5.modid.ModTemplate;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;

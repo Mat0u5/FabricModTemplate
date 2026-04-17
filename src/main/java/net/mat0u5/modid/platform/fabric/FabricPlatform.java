@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.fabric;
+package net.mat0u5.modid.platform.fabric;
 
 //? fabric {
 
-import com.example.modtemplate.platform.Platform;
+import net.mat0u5.modid.platform.Platform;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class FabricPlatform implements Platform {

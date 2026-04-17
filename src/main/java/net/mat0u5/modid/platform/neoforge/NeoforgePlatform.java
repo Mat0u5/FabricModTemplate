@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.neoforge;
+package net.mat0u5.modid.platform.neoforge;
 
 //? neoforge {
 
-/*import com.example.modtemplate.platform.Platform;
+/*import net.mat0u5.modid.platform.Platform;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.VersionInfo;

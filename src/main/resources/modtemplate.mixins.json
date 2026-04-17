@@ -1,5 +1,5 @@
 {
-  "package": "com.example.modtemplate.mixin",
+  "package": "net.mat0u5.modid.mixin",
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "${java}",

@@ -1,8 +1,8 @@
-package com.example.modtemplate.platform.fabric;
+package net.mat0u5.modid.platform.fabric;
 
 //? fabric {
 
-import com.example.modtemplate.ModTemplate;
+import net.mat0u5.modid.ModTemplate;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import net.fabricmc.api.ClientModInitializer;
 

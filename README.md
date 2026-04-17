@@ -53,7 +53,7 @@ Edit `gradle.properties` to set your mod's metadata:
 |--------------------|----------------------------------------------|-------------------------------------------------------------------|
 | `mod.id`           | Your mod’s identifier (lowercase, no spaces) | `modtemplate`                                                     |
 | `mod.name`         | Display name of your mod                     | `Mod Template`                                                    |
-| `mod.group`        | Java package group                           | `com.example`                                                     |
+| `mod.group`        | Java package group                           | `net.mat0u5`                                                     |
 | `mod.version`      | Mod version number                           | `0.1.0`                                                           |
 | `mod.channel_tag`  | Optional release channel tag                 | `-alpha.0`                                                        |
 | `mod.authors`      | Name of the author(s), comma-separated       | `AuthorName`                                                      |
@@ -70,7 +70,7 @@ are defined in `gradle.properties` as `[VERSIONED]` then set in `versions/{versi
 
 #### 5. **Rename package structure**
 
-Rename the `com.example.modtemplate` package in
+Rename the `net.mat0u5.modtemplate` package in
 `src/main/java/` to match your `mod.group` and `mod.id`.
 
 #### 6. **Update resource files**
@@ -120,8 +120,8 @@ Be careful to run the correct task for the selected Stonecutter platform and Min
 
 The template uses a platform abstraction pattern to keep shared code loader-agnostic:
 
-* **Shared code** goes in `com.example.modtemplate` (no platform dependencies)
-* **Platform-specific code** goes in `com.example.modtemplate.platform.{fabric|neoforge}`
+* **Shared code** goes in `net.mat0u5.modtemplate` (no platform dependencies)
+* **Platform-specific code** goes in `net.mat0u5.modtemplate.platform.{fabric|neoforge}`
 * The `Platform` interface provides loader-specific functionality to shared code
 
 ### Adding Dependencies
