@@ -350,8 +350,12 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			version = displayVersion
 			changelog.set(rootProject.file("CHANGELOG.md").readText())
 			modLoaders.add(loader)
+			if (loader == "fabric") {
+				modLoaders.add("quilt")
+			}
 
-			displayName = "${prop("mod.name")} $modVersion for ${loader.replaceFirstChar(Char::titlecase)} $currentVersion"
+			val mcVersionRange = if (additionalVersions.isNotEmpty()) "$currentVersion-${additionalVersions.last()}" else currentVersion
+			displayName = "${prop("mod.name")} $modVersion for ${loader.replaceFirstChar(Char::titlecase)} $mcVersionRange"
 
 			// Check if Modrinth should be published
 			if (!modrinthAccessToken.isNullOrBlank() && modrinthProjectId.isNotBlank()) {
