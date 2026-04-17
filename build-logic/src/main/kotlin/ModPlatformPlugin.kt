@@ -256,8 +256,8 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 	private fun Project.configureJava(stonecutter: StonecutterBuildExtension, requiredJava: JavaVersion) {
 		extensions.configure<JavaPluginExtension>("java") {
-			withSourcesJar()
-			withJavadocJar()
+			//withSourcesJar()
+			//withJavadocJar()
 			sourceCompatibility = requiredJava
 			targetCompatibility = requiredJava
 		}
@@ -284,9 +284,9 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		tasks.register<Copy>("buildAndCollect") {
 			group = "build"
 			from(
-				tasks.named(extension.jarTask.get()),
-				tasks.named(extension.sourcesJarTask.get()),
-				tasks.named("javadocJar").get()
+				tasks.named(extension.jarTask.get())
+				//,tasks.named(extension.sourcesJarTask.get())
+				//,tasks.named("javadocJar").get()
 			)
 			into(rootProject.layout.buildDirectory.file("libs/$modVersion"))
 			dependsOn("build")
@@ -305,7 +305,9 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			?.filter(String::isNotEmpty).orEmpty()
 
 		val releaseType = ReleaseType.of(
-			channelTag.substringAfter('-').substringBefore('.').ifEmpty { "stable" })
+			channelTag.substringAfter('-').substringBefore('.').ifEmpty { "stable" }
+				.let { if (it == "dev") "beta" else it }
+		)
 
 		extensions.configure<ModPublishExtension>("publishMods") {
 			val mrStaging = envTrue("TEST_PUBLISHING_WITH_MR_STAGING")
@@ -324,12 +326,12 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			}
 
 			val jarTask = tasks.named(targetName).map { it as Jar }
-			val srcJarTask = tasks.named(ext.sourcesJarTask.get()).map { it as Jar }
+			//val srcJarTask = tasks.named(ext.sourcesJarTask.get()).map { it as Jar }
 			val currentVersion = stonecutter.current.version
 			val deps = ext.dependencies
 
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
-			additionalFiles.from(srcJarTask.flatMap(Jar::getArchiveFile))
+			//additionalFiles.from(srcJarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
 			version = fullVersion
 			changelog.set(rootProject.file("CHANGELOG.md").readText())

@@ -29,7 +29,7 @@ legacyForge {
 			client()
 			gameDirectory = file("run/")
 			ideName = "Forge Client (${stonecutter.active?.version})"
-			programArgument("--username=Dev")
+			programArgument("--username=Player")
 		}
 		register("server") {
 			server()

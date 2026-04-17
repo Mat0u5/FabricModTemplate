@@ -70,7 +70,7 @@ are defined in `gradle.properties` as `[VERSIONED]` then set in `versions/{versi
 
 #### 5. **Rename package structure**
 
-Rename the `net.mat0u5.modtemplate` package in
+Rename the `net.mat0u5.modid` package in
 `src/main/java/` to match your `mod.group` and `mod.id`.
 
 #### 6. **Update resource files**

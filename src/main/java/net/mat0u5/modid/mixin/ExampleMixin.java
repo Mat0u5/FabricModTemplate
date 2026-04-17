@@ -1,6 +1,6 @@
 package net.mat0u5.modid.mixin;
 
-import net.mat0u5.modid.ModTemplate;
+import net.mat0u5.modid.Main;
 import dev.kikugie.fletching_table.annotation.MixinEnvironment;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +14,7 @@ public class ExampleMixin {
 
 	@Inject(method = "loadLevel", at = @At("RETURN"))
 	private void afterLoadLevel(CallbackInfo ci) {
-		ModTemplate.LOGGER.info("Level Loaded!");
+		Main.LOGGER.info("[{}] Level Loaded!", Main.MOD_ID);
 	}
 
 }

@@ -13,27 +13,26 @@ import net.mat0u5.modid.platform.fabric.FabricPlatform;
 /*import net.mat0u5.modid.platform.forge.ForgePlatform;
 *///?}
 
-@SuppressWarnings("LoggingSimilarMessage")
-public class ModTemplate {
+public class Main {
 
-	public static final String MOD_ID = /*$ mod_id*/ "";
-	public static final String MOD_VERSION = /*$ mod_version*/ "";
-	public static final String MOD_FRIENDLY_NAME = /*$ mod_name*/ "";
+	public static final String MOD_ID = "modid";
+	public static final String MOD_VERSION = "1.0.0";
+	public static final String MOD_FRIENDLY_NAME = "ModId Name";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private static final Platform PLATFORM = createPlatformInstance();
 
 	public static void onInitialize() {
-		LOGGER.info("Initializing {} on {}", MOD_ID, ModTemplate.xplat().loader());
-		LOGGER.debug("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
+		LOGGER.info("Initializing {} on {}", MOD_ID, platform().loader());
+		LOGGER.info("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
 	}
 
 	public static void onInitializeClient() {
-		LOGGER.info("Initializing {} Client on {}", MOD_ID, ModTemplate.xplat().loader());
-		LOGGER.debug("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
+		LOGGER.info("Initializing {} Client on {}", MOD_ID, platform().loader());
+		LOGGER.info("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
 	}
 
-	static Platform xplat() {
+	static Platform platform() {
 		return PLATFORM;
 	}
 

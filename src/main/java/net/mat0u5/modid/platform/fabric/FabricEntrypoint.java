@@ -2,7 +2,7 @@ package net.mat0u5.modid.platform.fabric;
 
 //? fabric {
 
-import net.mat0u5.modid.ModTemplate;
+import net.mat0u5.modid.Main;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import net.fabricmc.api.ModInitializer;
 
@@ -11,7 +11,7 @@ public class FabricEntrypoint implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ModTemplate.onInitialize();
+		Main.onInitialize();
 		FabricEventSubscriber.registerEvents();
 	}
 }
