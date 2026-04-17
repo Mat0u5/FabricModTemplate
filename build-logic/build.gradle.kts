@@ -17,6 +17,8 @@ repositories {
 	gradlePluginPortal()
 	maven("https://maven.fabricmc.net/") { name = "Fabric" }
 	maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
+	maven("https://maven.minecraftforge.net/") { name = "MinecraftForge" }
+	maven("https://repo.spongepowered.org/repository/maven-public/") { name = "Sponge" }
 	maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
 	maven("https://maven.kikugie.dev/releases") { name = "KikuGie Releases" }
 	maven("https://jitpack.io") { name = "Jitpack" }

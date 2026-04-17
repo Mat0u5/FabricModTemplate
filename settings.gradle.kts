@@ -5,7 +5,7 @@ pluginManagement {
 		gradlePluginPortal()
 		maven("https://maven.fabricmc.net/") { name = "Fabric" }
 		maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
-		maven("https://maven.minecraftforge.net/") { name = "Forge" }
+		maven("https://maven.minecraftforge.net/") { name = "MinecraftForge" }
 		maven("https://repo.spongepowered.org/repository/maven-public/") { name = "Sponge" }
 		maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
 		maven("https://maven.kikugie.dev/releases") { name = "KikuGie Releases" }
@@ -29,12 +29,12 @@ stonecutter {
 			loaders.forEach { loader ->
 				val buildscriptName = when {
 					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
+					loader == "forge" && (!version.equals("1.20") &&(version.startsWith("1.20") || version.startsWith("1.21") || version.startsWith("26"))) -> "build.forge20.gradle.kts"
 					else -> "build.$loader.gradle.kts"
 				}
 				/*
 				val buildscriptName = when {
 					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
-					loader == "forge" && (version.startsWith("1.21") || version.startsWith("26")) -> "build.forge21.gradle.kts"
 					else -> "build.$loader.gradle.kts"
 				}
 				 */
@@ -51,7 +51,7 @@ stonecutter {
 		match("1.21.5", "fabric", "neoforge")
 		match("1.21.4", "fabric", "neoforge")
 		match("1.21.2", "fabric", "neoforge")
-		match("1.21", "fabric", "neoforge")
+		match("1.21", "fabric", "forge", "neoforge")
 
 		match("1.20.5", "fabric", "neoforge")
 		match("1.20.3", "fabric", "neoforge")
