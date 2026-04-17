@@ -16,7 +16,6 @@ platform {
 		required("fabricloader") {
 			versionRange = ">=${libs.fabric.loader.get().version}"
 		}
-		optional("modmenu") {}
 	}
 }
 
@@ -48,7 +47,6 @@ fabricApi {
 
 repositories {
 	mavenCentral()
-	strictMaven("https://maven.terraformersmc.com/", "com.terraformersmc") { name = "TerraformersMC" }
 	strictMaven("https://api.modrinth.com/maven", "maven.modrinth") { name = "Modrinth" }
 }
 
@@ -63,7 +61,6 @@ dependencies {
 	implementation(libs.moulberry.mixinconstraints)
 	include(libs.moulberry.mixinconstraints)
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
-	modLocalRuntime("com.terraformersmc:modmenu:${prop("deps.modmenu")}")
 }
 
 stonecutter {
