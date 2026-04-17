@@ -27,10 +27,10 @@ stonecutter {
 	create(rootProject) {
 		fun match(version: String, vararg loaders: String) {
 			loaders.forEach { loader ->
-				val buildscriptName = if (version.startsWith("26") && loader == "fabric") {
-					"build.fabric26.gradle.kts"
-				} else {
-					"build.$loader.gradle.kts"
+				val buildscriptName = when {
+					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
+					loader == "neoforge" && version.startsWith("1.20") -> "build.neoforge120.gradle.kts"
+					else -> "build.$loader.gradle.kts"
 				}
 				/*
 				val buildscriptName = when {

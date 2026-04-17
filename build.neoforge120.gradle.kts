@@ -4,19 +4,19 @@ plugins {
 }
 
 platform {
-	loader = "forge"
+	loader = "neoforge"
 	dependencies {
 		required("minecraft") {
 			forgeVersionRange = "[${prop("deps.minecraft")}]"
 		}
-		required("forge") {
+		required("neoforge") {
 			forgeVersionRange = "[1,)"
 		}
 	}
 }
 
 legacyForge {
-	version = "${property("deps.forge")}"
+	version = "${property("deps.minecraft")}-${property("deps.neoforge")}"
 
 	validateAccessTransformers = true
 
@@ -28,13 +28,13 @@ legacyForge {
 		register("client") {
 			client()
 			gameDirectory = file("run/")
-			ideName = "Forge Client (${stonecutter.active?.version})"
+			ideName = "NeoForge Client (${stonecutter.active?.version})"
 			programArgument("--username=Player")
 		}
 		register("server") {
 			server()
 			gameDirectory = file("run/")
-			ideName = "Forge Server (${stonecutter.active?.version})"
+			ideName = "NeoForge Server (${stonecutter.active?.version})"
 		}
 	}
 
