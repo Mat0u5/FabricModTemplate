@@ -335,7 +335,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			}
 
 			val isForge = loader == "forge"
-			val targetName = if (isForge) {
+			val targetName = if (isForge && stonecutter.eval(stonecutter.current.version, "<=1.20")) {
 				"reobfJar"
 			} else {
 				ext.jarTask.get()
