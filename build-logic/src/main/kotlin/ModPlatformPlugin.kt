@@ -23,7 +23,20 @@ import javax.inject.Inject
 
 fun Project.prop(name: String): String = (findProperty(name) ?: "") as String
 
-fun Project.env(variable: String): String? = providers.environmentVariable(variable).orNull
+fun Project.env(variable: String): String? {
+	var value = providers.environmentVariable(variable).orNull
+	if (value != null) return value
+
+	val envFile = rootProject.file(".env")
+	if (envFile.exists()) {
+		val props = java.util.Properties()
+		envFile.inputStream().use { props.load(it) }
+		value = props.getProperty(variable)
+		if (value != null) return value
+	}
+
+	return findProperty(variable) as? String
+}
 
 fun Project.envTrue(variable: String): Boolean = env(variable)?.toDefaultLowerCase() == "true"
 
@@ -314,6 +327,10 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 			val modrinthAccessToken = env("MODRINTH_API_TOKEN")
 			val curseforgeAccessToken = env("CURSEFORGE_API_TOKEN")
+
+			val modrinthProjectId = prop("publish.modrinth")
+			val curseforgeProjectId = prop("publish.curseforge")
+
 			if (!envTrue("ENABLE_PUBLISHING")) {
 				dryRun = true
 			}
@@ -326,12 +343,10 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			}
 
 			val jarTask = tasks.named(targetName).map { it as Jar }
-			//val srcJarTask = tasks.named(ext.sourcesJarTask.get()).map { it as Jar }
 			val currentVersion = stonecutter.current.version
 			val deps = ext.dependencies
 
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
-			//additionalFiles.from(srcJarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
 			version = fullVersion
 			changelog.set(rootProject.file("CHANGELOG.md").readText())
@@ -339,8 +354,19 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 			displayName = "${prop("mod.name")} $modVersion ${loader.replaceFirstChar(Char::titlecase)} $currentVersion"
 
-			modrinth(deps, currentVersion, additionalVersions, mrStaging, modrinthAccessToken)
-			if (!mrStaging) curseforge(deps, currentVersion, additionalVersions, false, curseforgeAccessToken)
+			// Check if Modrinth should be published
+			if (!modrinthAccessToken.isNullOrBlank() && modrinthProjectId.isNotBlank()) {
+				modrinth(deps, currentVersion, additionalVersions, mrStaging, modrinthAccessToken)
+			} else {
+				logger.lifecycle("Skipping Modrinth publishing for $name: Token or Project ID is missing.")
+			}
+
+			// Check if CurseForge should be published
+			if (!curseforgeAccessToken.isNullOrBlank() && curseforgeProjectId.isNotBlank()) {
+				if (!mrStaging) curseforge(deps, currentVersion, additionalVersions, false, curseforgeAccessToken)
+			} else {
+				logger.lifecycle("Skipping CurseForge publishing for $name: Token or Project ID is missing.")
+			}
 		}
 	}
 
