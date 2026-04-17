@@ -29,7 +29,6 @@ stonecutter {
 			loaders.forEach { loader ->
 				val buildscriptName = when {
 					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
-					loader == "neoforge" && version.startsWith("1.20") -> "build.neoforge120.gradle.kts"
 					else -> "build.$loader.gradle.kts"
 				}
 				/*
@@ -56,12 +55,11 @@ stonecutter {
 
 		match("1.20.5", "fabric", "neoforge")
 		match("1.20.3", "fabric", "neoforge")
-		match("1.20.2", "fabric", "neoforge")
-		match("1.20", "fabric", "forge", "neoforge")
+		match("1.20.2", "fabric")
+		match("1.20", "fabric", "forge")
 
 		match("1.19", "fabric", "forge")
 		match("1.18", "fabric", "forge")
-		match("1.17", "fabric", "forge")
 
 		vcsVersion = "26.1-fabric"
 	}

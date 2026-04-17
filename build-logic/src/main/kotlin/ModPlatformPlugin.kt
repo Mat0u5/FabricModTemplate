@@ -100,7 +100,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		extension.requiredJava.set(
 			when {
 				stonecutter.eval(stonecutter.current.version, ">=26") -> JavaVersion.VERSION_25
-				stonecutter.eval(stonecutter.current.version, ">=1.20.6") -> JavaVersion.VERSION_21
+				stonecutter.eval(stonecutter.current.version, ">=1.20.5") -> JavaVersion.VERSION_21
 				stonecutter.eval(stonecutter.current.version, ">=1.18") -> JavaVersion.VERSION_17
 				stonecutter.eval(stonecutter.current.version, ">=1.17") -> JavaVersion.VERSION_16
 				else -> JavaVersion.VERSION_1_8
@@ -351,6 +351,9 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			changelog.set(rootProject.file("CHANGELOG.md").readText())
 			modLoaders.add(loader)
 			if (loader == "fabric") {
+				modLoaders.add("quilt")
+			}
+			if (loader == "forge" && currentVersion == "1.20" && additionalVersions.size <= 1) {
 				modLoaders.add("quilt")
 			}
 
