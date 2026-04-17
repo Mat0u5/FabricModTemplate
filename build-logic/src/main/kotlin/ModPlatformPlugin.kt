@@ -298,8 +298,6 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			group = "build"
 			from(
 				tasks.named(extension.jarTask.get())
-				//,tasks.named(extension.sourcesJarTask.get())
-				//,tasks.named("javadocJar").get()
 			)
 			into(rootProject.layout.buildDirectory.file("libs/$modVersion"))
 			dependsOn("build")
@@ -312,14 +310,15 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		stonecutter: StonecutterBuildExtension,
 		modVersion: String,
 		channelTag: String,
-		fullVersion: String,
+		displayVersion: String,
 	) {
 		val additionalVersions = (findProperty("publish.additionalVersions") as String?)?.split(',')?.map(String::trim)
 			?.filter(String::isNotEmpty).orEmpty()
 
+		// Read release type from gradle.properties based on loader
+		val releaseTypeRaw = prop("release.$loader").ifBlank { "stable" }
 		val releaseType = ReleaseType.of(
-			channelTag.substringAfter('-').substringBefore('.').ifEmpty { "stable" }
-				.let { if (it == "dev") "beta" else it }
+			releaseTypeRaw.let { if (it == "dev") "beta" else it }
 		)
 
 		extensions.configure<ModPublishExtension>("publishMods") {
@@ -348,11 +347,11 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
-			version = fullVersion
+			version = displayVersion
 			changelog.set(rootProject.file("CHANGELOG.md").readText())
 			modLoaders.add(loader)
 
-			displayName = "${prop("mod.name")} $modVersion ${loader.replaceFirstChar(Char::titlecase)} $currentVersion"
+			displayName = "${prop("mod.name")} $modVersion for ${loader.replaceFirstChar(Char::titlecase)} $currentVersion"
 
 			// Check if Modrinth should be published
 			if (!modrinthAccessToken.isNullOrBlank() && modrinthProjectId.isNotBlank()) {
@@ -379,11 +378,11 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		currentVersion: String,
 		additionalVersions: List<String>,
 		staging: Boolean,
-		acesssToken: String?
+		accessToken: String?
 	) = modrinth {
 		if (staging) apiEndpoint = "https://staging-api.modrinth.com/v2"
 		projectId = project.prop("publish.modrinth")
-		accessToken = acesssToken
+		this.accessToken = accessToken
 		minecraftVersions.addAll(listOf(currentVersion) + additionalVersions)
 
 		if (!staging) {
@@ -399,10 +398,10 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		currentVersion: String,
 		additionalVersions: List<String>,
 		staging: Boolean,
-		acesssToken: String?
+		accessToken: String?
 	) = curseforge {
 		projectId = project.prop("publish.curseforge")
-		accessToken = acesssToken
+		this.accessToken = accessToken
 		minecraftVersions.addAll(listOf(currentVersion) + additionalVersions)
 
 		deps.required.forEach { dep -> whenNotNull(dep.curseforge) { requires(it) } }
