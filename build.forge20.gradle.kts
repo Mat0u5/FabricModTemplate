@@ -41,6 +41,12 @@ minecraft {
 	}
 }
 
+sourceSets.configureEach {
+	val dir = layout.buildDirectory.dir("sourcesSets/$name")
+	output.setResourcesDir(dir)
+	java.destinationDirectory.set(dir)
+}
+
 repositories {
 	minecraft.mavenizer(this)
 	maven(fg.forgeMaven)
