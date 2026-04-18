@@ -63,7 +63,6 @@ dependencies {
 	implementation(minecraft.dependency("net.minecraftforge:forge:${prop("deps.forge")}"))
 	annotationProcessor("org.spongepowered:mixin:${libs.versions.mixin.get()}:processor")
 	implementation(libs.moulberry.mixinconstraints)
-	"jarJar"(libs.moulberry.mixinconstraints)
 }
 
 tasks.named<Jar>("jar") {

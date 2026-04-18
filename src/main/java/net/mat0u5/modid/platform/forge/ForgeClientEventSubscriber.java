@@ -12,7 +12,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
 //?}
 
-@Mod.EventBusSubscriber(modid = Main.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Main.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ForgeClientEventSubscriber {
 
 	@SubscribeEvent

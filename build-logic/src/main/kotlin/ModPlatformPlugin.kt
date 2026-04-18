@@ -185,8 +185,8 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 					""
 				}
 
-				val mixinJava = if (isForge && requiredJava == JavaVersion.VERSION_25) {
-					"JAVA_21"
+				val mixinJava = if (isForge) {
+					"JAVA_17"
 				} else {
 					"JAVA_${requiredJava.majorVersion}"
 				}
