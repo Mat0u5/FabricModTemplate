@@ -2,7 +2,7 @@
   "package": "net.mat0u5.modid.mixin",
   "required": true,
   "minVersion": "0.8",
-  ${refmap}
+  "refmap": "${id}.mixins.refmap.json",
   "compatibilityLevel": "${java}",
   "injectors": {
     "defaultRequire": 1

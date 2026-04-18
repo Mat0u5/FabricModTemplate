@@ -127,7 +127,8 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				}
 
 				required.maybeCreate("fabric-api").apply {
-					modid.set("fabric-api")
+					val legacyFabricApi = stonecutter.eval(stonecutter.current.version, "<=1.19")
+					modid.set(if (legacyFabricApi) "fabric" else "fabric-api")
 					versionRange.set(prop("mod.api_range").ifBlank { "*" })
 				}
 			}
@@ -144,7 +145,8 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			"$modVersion$channelTag",
 			mcVersion,
 			extension,
-			extension.requiredJava.get()
+			extension.requiredJava.get(),
+			stonecutter
 		)
 		configureJava(stonecutter, extension.requiredJava.get())
 		registerBuildAndCollectTask(extension, "$modVersion$channelTag")
@@ -172,19 +174,14 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		modVersion: String,
 		mcVersion: String,
 		extension: ModPlatformExtension,
-		requiredJava: JavaVersion
+		requiredJava: JavaVersion,
+		stonecutter: StonecutterBuildExtension
 	) {
 		tasks.named<ProcessResources>("processResources") {
 			dependsOn(tasks.named("stonecutterGenerate"))
 			dependsOn("kspKotlin")
 
 			filesMatching("*.mixins.json") {
-				val refmapLine = if (isForge) {
-					"\"refmap\": \"${modId}.mixins.refmap.json\","
-				} else {
-					""
-				}
-
 				val mixinJava = if (isForge) {
 					"JAVA_17"
 				} else {
@@ -193,7 +190,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 				expand(
 					"java" to mixinJava,
-					"refmap" to refmapLine
+					"id" to modId
 				)
 			}
 
@@ -233,8 +230,14 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				}
 
 				isNeoForge -> {
-					filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
-					exclude("META-INF/mods.toml", "fabric.mod.json", "aw/*.accesswidener", ".cache", "pack.mcmeta")
+					val usesLegacyToml = stonecutter.eval(stonecutter.current.version, "<=1.20.3")
+					if (usesLegacyToml) {
+						filesMatching("META-INF/mods.toml") { expand(props) }
+						exclude("META-INF/neoforge.mods.toml", "fabric.mod.json", "aw/*.accesswidener", ".cache", "pack.mcmeta")
+					} else {
+						filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
+						exclude("META-INF/mods.toml", "fabric.mod.json", "aw/*.accesswidener", ".cache", "pack.mcmeta")
+					}
 				}
 
 				isForge -> {
@@ -388,14 +391,14 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			if (!modrinthAccessToken.isNullOrBlank() && modrinthProjectId.isNotBlank()) {
 				modrinth(deps, currentVersion, additionalVersions, mrStaging, modrinthAccessToken)
 			} else {
-				logger.lifecycle("Skipping Modrinth publishing for $name: Token or Project ID is missing.")
+				//logger.lifecycle("Skipping Modrinth publishing for $name: Token or Project ID is missing.")
 			}
 
 			// Check if CurseForge should be published
 			if (!curseforgeAccessToken.isNullOrBlank() && curseforgeProjectId.isNotBlank()) {
 				if (!mrStaging) curseforge(deps, currentVersion, additionalVersions, false, curseforgeAccessToken)
 			} else {
-				logger.lifecycle("Skipping CurseForge publishing for $name: Token or Project ID is missing.")
+				//logger.lifecycle("Skipping CurseForge publishing for $name: Token or Project ID is missing.")
 			}
 		}
 	}
