@@ -65,16 +65,20 @@ dependencies {
 	implementation(libs.moulberry.mixinconstraints)
 }
 
+tasks.withType<JavaCompile>().configureEach {
+	options.compilerArgs.addAll(listOf(
+		"-Amixin.refmap.name=${prop("mod.id")}.mixins.refmap.json",
+		"-AoutRefMapFile=${layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json").get().asFile}"
+	))
+}
 tasks.named<Jar>("jar") {
 	manifest {
 		attributes["MixinConfigs"] = "${prop("mod.id")}.mixins.json"
 	}
-}
-tasks.configureEach {
-	if (name.startsWith("run")) {
-		dependsOn(tasks.named("classes"))
-		dependsOn(tasks.named("processResources"))
+	from(layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json")) {
+		into("/")
 	}
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 sourceSets {
