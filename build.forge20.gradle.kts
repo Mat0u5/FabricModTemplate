@@ -49,7 +49,9 @@ repositories {
 	mavenCentral()
 }
 
-jarJar.register()
+jarJar.register() {
+	archiveClassifier = null
+}
 
 dependencies {
 	implementation(minecraft.dependency("net.minecraftforge:forge:${prop("deps.forge")}"))
@@ -61,6 +63,12 @@ dependencies {
 tasks.named<Jar>("jar") {
 	manifest {
 		attributes["MixinConfigs"] = "${prop("mod.id")}.mixins.json"
+	}
+}
+tasks.configureEach {
+	if (name.startsWith("run")) {
+		dependsOn(tasks.named("classes"))
+		dependsOn(tasks.named("processResources"))
 	}
 }
 

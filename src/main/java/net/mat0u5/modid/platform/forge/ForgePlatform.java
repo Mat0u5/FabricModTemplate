@@ -10,7 +10,11 @@ public class ForgePlatform implements Platform {
 
 	@Override
 	public boolean isModLoaded(String modId) {
-		return ModList.get().isLoaded(modId);
+		//? if <= 1.21.11 {
+		/^return ModList.get().isLoaded(modId);
+		^///?} else {
+		return ModList.isLoaded(modId);
+		//?}
 	}
 
 	@Override

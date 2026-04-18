@@ -86,6 +86,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		val modVersion = prop("mod.version")
 		val channelTag = prop("mod.channel_tag")
 		val mcVersion = prop("deps.minecraft")
+		val mcRange = prop("mod.mc_range").ifBlank { "[$mcVersion]" }
 
 		val stonecutter = extensions.getByType<StonecutterBuildExtension>()
 
@@ -107,10 +108,27 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			}
 		)
 
-		if (isFabric) {
-			extension.dependencies {
-				required("java") {
-					versionRange = ">=${extension.requiredJava.get().majorVersion}"
+		extension.dependencies {
+			required.maybeCreate("minecraft").apply {
+				modid.set("minecraft")
+				versionRange.set(mcRange)
+				forgeVersionRange.set(mcRange)
+			}
+
+			if (isFabric) {
+				required.maybeCreate("java").apply {
+					modid.set("java")
+					versionRange.set(">=${extension.requiredJava.get().majorVersion}")
+				}
+
+				required.maybeCreate("fabricloader").apply {
+					modid.set("fabricloader")
+					versionRange.set(prop("mod.loader_range").ifBlank { "*" })
+				}
+
+				required.maybeCreate("fabric-api").apply {
+					modid.set("fabric-api")
+					versionRange.set(prop("mod.api_range").ifBlank { "*" })
 				}
 			}
 		}
@@ -167,8 +185,14 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 					""
 				}
 
+				val mixinJava = if (isForge && requiredJava == JavaVersion.VERSION_25) {
+					"JAVA_21"
+				} else {
+					"JAVA_${requiredJava.majorVersion}"
+				}
+
 				expand(
-					"java" to "JAVA_${requiredJava.majorVersion}",
+					"java" to mixinJava,
 					"refmap" to refmapLine
 				)
 			}

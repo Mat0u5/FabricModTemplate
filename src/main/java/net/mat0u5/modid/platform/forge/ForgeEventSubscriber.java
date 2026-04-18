@@ -2,20 +2,25 @@ package net.mat0u5.modid.platform.forge;
 
 //? forge {
 
-/*import net.mat0u5.modid.event.ExampleEventHandler; // sample_content
-import net.minecraft.server.level.ServerPlayer; // sample_content
+/*import net.mat0u5.modid.Main;
+import net.mat0u5.modid.event.ExampleEventHandler;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+//? if <= 1.21.5 {
+/^import net.minecraftforge.eventbus.api.SubscribeEvent;
+^///?} else {
+import net.minecraftforge.eventbus.api.listener.SubscribeEvent;
+//?}
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Main.MOD_ID)
 public class ForgeEventSubscriber {
 
-	@SubscribeEvent // sample_content
-	public static void onPlayerDamage(LivingDamageEvent event) { // sample_content
-		if (event.getEntity() instanceof ServerPlayer player && event.getAmount() > 0) { // sample_content
-			ExampleEventHandler.onPlayerHurt(player); // sample_content
-		} // sample_content
-	} // sample_content
+	@SubscribeEvent
+	public static void onPlayerDamage(LivingDamageEvent event) {
+		if (event.getEntity() instanceof ServerPlayer player && event.getAmount() > 0) {
+			ExampleEventHandler.onPlayerHurt(player);
+		}
+	}
 }
 *///?}
