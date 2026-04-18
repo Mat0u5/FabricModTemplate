@@ -55,9 +55,6 @@ dependencies {
 
 	implementation(libs.fabric.loader)
 	implementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
-
-	implementation(libs.moulberry.mixinconstraints)
-	include(libs.moulberry.mixinconstraints)
 }
 
 stonecutter {
