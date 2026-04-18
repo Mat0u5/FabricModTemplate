@@ -225,7 +225,12 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 			when {
 				isFabric -> {
-					filesMatching("fabric.mod.json") { expand(props) }
+					filesMatching("fabric.mod.json") {
+						filter { line ->
+							if (line.trim() == "\"depends\": {}") "  \"depends\": {$dependencies\n  }" else line
+						}
+						expand(props.filterKeys { it != "dependencies" })
+					}
 					exclude("META-INF/mods.toml", "META-INF/neoforge.mods.toml", "aw/*.cfg", ".cache", "pack.mcmeta")
 				}
 
@@ -252,23 +257,11 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		isFabric: Boolean, modId: String, deps: DependenciesConfig
 	): String = if (isFabric) {
 		buildString {
-			fun joinGroup(
-				name: String, container: NamedDomainObjectContainer<Dependency>
-			): String? {
-				if (container.isEmpty()) return null
-				val entries = container.joinToString(",\n    ") {
-					"\"${it.modid.get()}\": \"${it.versionRange.get()}\""
-				}
-				return "\n  \"$name\": {\n    $entries\n  }"
-			}
+			fun joinEntries(container: NamedDomainObjectContainer<Dependency>): List<String> =
+				container.map { "    \"${it.modid.get()}\": \"${it.versionRange.get()}\"" }
 
-			val groups = listOfNotNull(
-				joinGroup("depends", deps.required),
-				joinGroup("recommends", deps.optional),
-				joinGroup("breaks", deps.incompatible)
-			)
-
-			append(groups.joinToString(","))
+			val entries = joinEntries(deps.required) + joinEntries(deps.optional)
+			if (entries.isNotEmpty()) append("\n" + entries.joinToString(",\n"))
 		}
 	} else {
 		buildString {
