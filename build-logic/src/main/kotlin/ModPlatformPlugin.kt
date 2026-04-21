@@ -84,7 +84,8 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 		val modId = prop("mod.id")
 		val modVersion = prop("mod.version")
-		val channelTag = prop("mod.channel_tag")
+		val modVersionPrefix = prop("mod.version_prefix")
+		val modVersionSuffix = prop("mod.version_suffix")
 		val mcVersion = prop("deps.minecraft")
 		val mcRange = prop("mod.mc_range").ifBlank { "[$mcVersion]" }
 
@@ -96,7 +97,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			"idea",
 		).forEach { apply(plugin = it) }
 
-		version = "$modVersion$channelTag+$mcVersion-$loader"
+		version = "$modVersionPrefix$modVersion$modVersionSuffix+$mcVersion-$loader"
 
 		extension.requiredJava.set(
 			when {
@@ -142,15 +143,17 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			isNeoForge,
 			isForge,
 			modId,
-			"$modVersion$channelTag",
+			"$modVersionPrefix$modVersion$modVersionSuffix",
 			mcVersion,
 			extension,
 			extension.requiredJava.get(),
 			stonecutter
 		)
 		configureJava(stonecutter, extension.requiredJava.get())
-		registerBuildAndCollectTask(extension, "$modVersion$channelTag")
-		configurePublishing(extension, loader, stonecutter, "$modVersion$channelTag", channelTag, version.toString())
+		registerBuildAndCollectTask(extension, "$modVersionPrefix$modVersion$modVersionSuffix")
+		configurePublishing(extension, loader, stonecutter,
+			"$modVersionPrefix$modVersion$modVersionSuffix",
+			"$loader-$modVersionPrefix$modVersion$modVersionSuffix+$mcVersion")
 	}
 
 	private fun Project.configureJarTask(modId: String, loader: String) {
@@ -329,7 +332,6 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		loader: String,
 		stonecutter: StonecutterBuildExtension,
 		modVersion: String,
-		channelTag: String,
 		displayVersion: String,
 	) {
 		val additionalVersions = (findProperty("publish.additionalVersions") as String?)?.split(',')?.map(String::trim)
@@ -374,7 +376,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				modLoaders.add("quilt")
 			}
 			if (loader == "forge" && currentVersion == "1.20" && additionalVersions.size <= 1) {
-				modLoaders.add("quilt")
+				modLoaders.add("neoforge")
 			}
 
 			val mcVersionRange = if (additionalVersions.isNotEmpty()) "$currentVersion-${additionalVersions.last()}" else currentVersion
