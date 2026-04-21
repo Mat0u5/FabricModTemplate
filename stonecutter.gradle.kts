@@ -23,7 +23,13 @@ for (version in stonecutter.versions.map { it.version }.distinct()) tasks.regist
 
 stonecutter tasks {
 	val ordering = versionComparator.thenComparingInt { task ->
-		if (task.metadata.project.endsWith("fabric")) 1 else 0
+		val projectName = task.metadata.project.lowercase()
+
+		when {
+			projectName.contains("fabric") -> 2
+			projectName.contains("neoforge") -> 1
+			else -> 0
+		}
 	}
 
 	listOf("publishModrinth", "publishCurseforge").forEach { taskName ->
