@@ -16,41 +16,43 @@ plugins {
 
 stonecutter active file(".sc_active_version")
 
+
 for (version in stonecutter.versions.map { it.version }.distinct()) tasks.register("publish$version") {
 	group = "publishing"
 	dependsOn(stonecutter.tasks.named("publishMods") { metadata.version == version })
 }
 
-gradle.taskGraph.whenReady {
-	val taskNames = listOf("publishModrinth", "publishCurseforge")
+gradle.projectsEvaluated {
+	val versionOrder = stonecutter.versions.map { it.version }.distinct().reversed()
 
-	taskNames.forEach { targetName ->
-		val allTasksInBuild = allTasks.filter { it.name == targetName }
+	listOf("publishModrinth", "publishCurseforge").forEach { taskName ->
+		val allTasks = subprojects.mapNotNull { it.tasks.findByName(taskName) }
 
-		val sortedTasks = allTasksInBuild.sortedWith(
-			compareBy<Task> { task ->
-				val pName = task.project.name.lowercase()
+		val sorted = allTasks.sortedWith(compareBy(
+			{ task ->
+				val loader = task.project.name.substringAfterLast('-')
 				when {
-					pName.contains("fabric") -> 2
-					pName.contains("neoforge") -> 1
+					"fabric" in loader -> 2
+					"neoforge" in loader -> 1
 					else -> 0
 				}
-			}.thenBy { it.project.name }
-		)
+			},
+			{ task ->
+				val version = task.project.name.substringBeforeLast('-')
+				versionOrder.indexOf(version).takeIf { it >= 0 } ?: Int.MAX_VALUE
+			}
+		))
 
-		for (i in 1 until sortedTasks.size) {
-			val previous = sortedTasks[i - 1]
-			val current = sortedTasks[i]
-
-			current.mustRunAfter(previous)
+		for (i in 1 until sorted.size) {
+			sorted[i].dependsOn(sorted[i - 1])
 		}
 
-		sortedTasks.forEachIndexed { index, task ->
-			if (index > 0) {
-				task.doFirst {
-					logger.lifecycle("\n>>> [WAITING] 10s delay: Uploading ${task.project.name} after ${sortedTasks[index-1].project.name}...")
-					Thread.sleep(10000)
-				}
+		sorted.forEach { task ->
+			val loader = task.project.name.substringAfterLast('-')
+			val delayMs = 2000L;
+			task.doFirst {
+				logger.lifecycle("\n>>> [WAITING] ${delayMs/1000}s before uploading ${task.project.name}...")
+				Thread.sleep(delayMs)
 			}
 		}
 	}
