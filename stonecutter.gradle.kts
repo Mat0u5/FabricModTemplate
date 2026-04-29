@@ -96,25 +96,81 @@ fun Project.env(variable: String): String? {
 
 publishMods {
 	// Non-root releases are in ModPlatformPlugin
+	val shouldPublishGithub = project.findProperty("publish.github")?.toString() == "true"
+	val shouldAnnounceDiscord = project.findProperty("publish.discord")?.toString() == "true"
 
-	github {
-		val githubAccessToken = env("GITHUB_TOKEN")
-		val forcePrerelease = property("publish.github.prerelease").toString() == "true"
+	if (shouldPublishGithub) {
+		github {
+			val githubAccessToken = env("GITHUB_TOKEN")
+			val forcePrerelease = property("publish.github.prerelease").toString() == "true"
 
-		val versionName = property("mod.version").toString()
+			val versionName = property("mod.version").toString()
 
-		version = versionName
-		displayName = "Version $versionName"
-		changelog = rootProject.file("CHANGELOG.md").readText()
-		type = when {
-			forcePrerelease -> me.modmuss50.mpp.ReleaseType.BETA
-			else -> me.modmuss50.mpp.ReleaseType.STABLE
+			version = versionName
+			displayName = "Version $versionName"
+			changelog = rootProject.file("CHANGELOG.md").readText()
+			type = when {
+				forcePrerelease -> me.modmuss50.mpp.ReleaseType.BETA
+				else -> me.modmuss50.mpp.ReleaseType.STABLE
+			}
+
+			accessToken = githubAccessToken
+			repository = property("publish.github.target").toString().removeSuffix("/")
+			commitish = property("publish.github.branch").toString().ifBlank { "main" }
+			tagName = property("mod.version").toString()
+			allowEmptyFiles = true
 		}
-
-		accessToken = githubAccessToken
-		repository = property("publish.github.target").toString().removeSuffix("/")
-		commitish = property("publish.github.branch").toString().ifBlank { "main" }
-		tagName = property("mod.version").toString()
-		allowEmptyFiles = true
 	}
+
+
+	if (shouldAnnounceDiscord) {
+		val versionName = project.findProperty("mod.version")?.toString()
+		val versionPrefix = project.findProperty("mod.version_prefix")?.toString()
+		val versionSuffix = project.findProperty("mod.version_suffix")?.toString()
+		val isDev = project.findProperty("publish.discord.dev")?.toString() == "true"
+		val version = versionPrefix+versionName+versionSuffix
+		val webhook = if (isDev) env("DISCORD_WEBHOOK_DEV") else env("DISCORD_WEBHOOK")
+		val changelogLink = project.findProperty("publish.changelog.link")?.toString()
+
+		discord("header") {
+			username = "Mat0u5"
+			avatarUrl = "https://github.com/Mat0u5.png"
+			webhookUrl = webhook
+			if (!isDev) {
+				content = "<@&1312808018483613726>";
+			}
+			else {
+				content = "<@&1312808018483613726>";
+			}
+			setPlatformsAllFrom()
+		}
+		discord("body") {
+			username = "Mat0u5"
+			avatarUrl = "https://github.com/Mat0u5.png"
+			changelog = rootProject.file("CHANGELOG.md").readText()
+			webhookUrl = webhook
+
+			if (!isDev) {
+				content = changelog.map { "# [ModId version `$version` is out!](https://modrinth.com/mod/modid/versions)\n" +
+					"### Changelog:\n" +
+					"```\n$it```\n\n" +
+					"[Click here to open the **full changelog**]($changelogLink)" }
+			}
+			else {
+				content = changelog.map { "# [ModId version `$version` is out!](https://modrinth.com/mod/modid-dev/versions)\n" +
+					"### Changelog:\n" +
+					"```\n$it```\n\n" +
+					"[Click here to open the **full changelog**]($changelogLink)" }
+			}
+
+			setPlatformsAllFrom()
+			style {
+				thumbnailUrl = if (isDev) "https://img2.webp" else "https://img1.webp"
+				color = if (isDev) "#B24691" else "#511A82"
+				look = "MODERN"
+				//link = "BUTTON"
+			}
+		}
+	}
+
 }

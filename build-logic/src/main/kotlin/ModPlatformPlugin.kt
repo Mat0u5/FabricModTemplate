@@ -375,7 +375,9 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
 			version = displayVersion
-			changelog.set(rootProject.file("CHANGELOG.md").readText())
+			val changelogFile = rootProject.file("CHANGELOG.md").readText()
+			val changelogLink = prop("publish.changelog.link")
+			changelog.set(changelogFile.replace("\n","\n\n")+"\n\n[Click here to open the **full changelog**]($changelogLink)")
 			modLoaders.add(loader)
 			if (loader == "fabric") {
 				modLoaders.add("quilt")
