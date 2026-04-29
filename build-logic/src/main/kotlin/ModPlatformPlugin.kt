@@ -337,22 +337,27 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		val additionalVersions = (findProperty("publish.additionalVersions") as String?)?.split(',')?.map(String::trim)
 			?.filter(String::isNotEmpty).orEmpty()
 
-		// Read release type from gradle.properties based on loader
-		val releaseTypeRaw = prop("release.$loader").ifBlank { "stable" }
+		val releaseTypeRaw = prop("publish.release.$loader").ifBlank { "stable" }
 		val releaseType = ReleaseType.of(
 			releaseTypeRaw.let { if (it == "dev") "beta" else it }
 		)
 
 		extensions.configure<ModPublishExtension>("publishMods") {
-			val mrStaging = envTrue("TEST_PUBLISHING_WITH_MR_STAGING")
+			//val mrStaging = prop("publish.modrinth.staging") == "true"
+			val mrStaging = false
 
 			val modrinthAccessToken = env("MODRINTH_API_TOKEN")
 			val curseforgeAccessToken = env("CURSEFORGE_API_TOKEN")
+			val githubAccessToken = env("GITHUB_TOKEN")
 
-			val modrinthProjectId = prop("publish.modrinth")
-			val curseforgeProjectId = prop("publish.curseforge")
+			val modrinthProjectId = prop("publish.modrinth.id")
+			val curseforgeProjectId = prop("publish.curseforge.id")
 
-			if (!envTrue("ENABLE_PUBLISHING")) {
+			val modrinthPublish = prop("publish.modrinth") == "true"
+			val curseforgePublish = prop("publish.curseforge") == "true"
+			val githubPublish = prop("publish.github") == "true"
+
+			if (prop("publish.dryrun") == "true") {
 				dryRun = true
 			}
 
@@ -382,18 +387,19 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			val mcVersionRange = if (additionalVersions.isNotEmpty()) "$currentVersion-${additionalVersions.last()}" else currentVersion
 			displayName = "${prop("mod.name")} $modVersion for ${loader.replaceFirstChar(Char::titlecase)} $mcVersionRange"
 
-			// Check if Modrinth should be published
-			if (!modrinthAccessToken.isNullOrBlank() && modrinthProjectId.isNotBlank()) {
+			if (modrinthPublish && !modrinthAccessToken.isNullOrBlank() && modrinthProjectId.isNotBlank()) {
 				modrinth(deps, currentVersion, additionalVersions, mrStaging, modrinthAccessToken)
-			} else {
-				//logger.lifecycle("Skipping Modrinth publishing for $name: Token or Project ID is missing.")
 			}
 
-			// Check if CurseForge should be published
-			if (!curseforgeAccessToken.isNullOrBlank() && curseforgeProjectId.isNotBlank()) {
+			if (curseforgePublish && !curseforgeAccessToken.isNullOrBlank() && curseforgeProjectId.isNotBlank()) {
 				if (!mrStaging) curseforge(deps, currentVersion, additionalVersions, false, curseforgeAccessToken)
-			} else {
-				//logger.lifecycle("Skipping CurseForge publishing for $name: Token or Project ID is missing.")
+			}
+
+			if (githubPublish && !githubAccessToken.isNullOrBlank()) {
+				github {
+					accessToken = githubAccessToken
+					parent(project(":").tasks.named("publishGithub"))
+				}
 			}
 		}
 	}
@@ -410,7 +416,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		accessToken: String?
 	) = modrinth {
 		if (staging) apiEndpoint = "https://staging-api.modrinth.com/v2"
-		projectId = project.prop("publish.modrinth")
+		projectId = project.prop("publish.modrinth.id")
 		this.accessToken = accessToken
 		minecraftVersions.addAll(listOf(currentVersion) + additionalVersions)
 
@@ -429,7 +435,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		staging: Boolean,
 		accessToken: String?
 	) = curseforge {
-		projectId = project.prop("publish.curseforge")
+		projectId = project.prop("publish.curseforge.id")
 		this.accessToken = accessToken
 		minecraftVersions.addAll(listOf(currentVersion) + additionalVersions)
 

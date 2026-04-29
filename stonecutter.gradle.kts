@@ -1,13 +1,13 @@
 plugins {
 	alias(libs.plugins.stonecutter)
 	alias(libs.plugins.dotenv)
+	alias(libs.plugins.mod.publish.plugin)
 	alias(libs.plugins.fabric.loom).apply(false)
 	alias(libs.plugins.fabric.loom.remap).apply(false)
 	alias(libs.plugins.neoforged.moddev).apply(false)
 	alias(libs.plugins.minecraftforge.gradle).apply(false)
 	alias(libs.plugins.minecraftforge.jarjar).apply(false)
 	alias(libs.plugins.jsonlang.postprocess).apply(false)
-	alias(libs.plugins.mod.publish.plugin).apply(false)
 	alias(libs.plugins.kotlin.jvm).apply(false)
 	alias(libs.plugins.devtools.ksp).apply(false)
 	alias(libs.plugins.fletching.table).apply(false)
@@ -77,4 +77,44 @@ stonecutter parameters {
 	swaps["mod_group"] = "\"" + property("mod.group") + "\";"
 	swaps["minecraft"] = "\"" + node.metadata.version + "\";"
 	constants["release"] = property("mod.id") != "modtemplate"
+}
+
+fun Project.env(variable: String): String? {
+	var value = providers.environmentVariable(variable).orNull
+	if (value != null) return value
+
+	val envFile = rootProject.file(".env")
+	if (envFile.exists()) {
+		val props = java.util.Properties()
+		envFile.inputStream().use { props.load(it) }
+		value = props.getProperty(variable)
+		if (value != null) return value
+	}
+
+	return findProperty(variable) as? String
+}
+
+publishMods {
+	// Non-root releases are in ModPlatformPlugin
+
+	github {
+		val githubAccessToken = env("GITHUB_TOKEN")
+		val forcePrerelease = property("publish.github.prerelease").toString() == "true"
+
+		val versionName = property("mod.version").toString()
+
+		version = versionName
+		displayName = "Version $versionName"
+		changelog = rootProject.file("CHANGELOG.md").readText()
+		type = when {
+			forcePrerelease -> me.modmuss50.mpp.ReleaseType.BETA
+			else -> me.modmuss50.mpp.ReleaseType.STABLE
+		}
+
+		accessToken = githubAccessToken
+		repository = property("publish.github.target").toString().removeSuffix("/")
+		commitish = property("publish.github.branch").toString().ifBlank { "main" }
+		tagName = property("mod.version").toString()
+		allowEmptyFiles = true
+	}
 }
