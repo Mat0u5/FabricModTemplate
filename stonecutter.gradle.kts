@@ -56,6 +56,16 @@ gradle.projectsEvaluated {
 			}
 		}
 	}
+
+	tasks.findByName("publishDiscordBody") ?.dependsOn(tasks.named("publishDiscordHeader"))
+
+	val shouldWaitForModrinth = findProperty("publish.modrinth")?.toString() == "true"
+	val shouldAnnounceDiscord = findProperty("publish.discord")?.toString() == "true"
+
+	if (shouldAnnounceDiscord && shouldWaitForModrinth) {
+		val allModrinthTasks = subprojects.mapNotNull { it.tasks.findByName("publishModrinth") }
+		tasks.findByName("publishDiscordHeader")?.dependsOn(allModrinthTasks)
+	}
 }
 
 tasks.register("runActiveClient") {
@@ -132,7 +142,7 @@ publishMods {
 		val webhook = if (isDev) env("DISCORD_WEBHOOK_DEV") else env("DISCORD_WEBHOOK")
 		val changelogLink = project.findProperty("publish.changelog.link")?.toString()
 
-		discord("header") {
+		discord("publishDiscordHeader") {
 			username = "Mat0u5"
 			avatarUrl = "https://github.com/Mat0u5.png"
 			webhookUrl = webhook
@@ -144,7 +154,7 @@ publishMods {
 			}
 			setPlatformsAllFrom()
 		}
-		discord("body") {
+		discord("publishDiscordBody") {
 			username = "Mat0u5"
 			avatarUrl = "https://github.com/Mat0u5.png"
 			changelog = rootProject.file("CHANGELOG.md").readText()
