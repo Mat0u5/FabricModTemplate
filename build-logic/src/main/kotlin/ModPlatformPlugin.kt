@@ -374,7 +374,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
-			version = displayVersion
+			version = displayVersion.replace("snapshot", "snap").take(32)
 			val changelogFile = rootProject.file("CHANGELOG.md").readText()
 			val changelogLink = prop("publish.changelog.link")
 			changelog.set(changelogFile.replace("\n","\n\n")+"\n\n[Click here to open the **full changelog**]($changelogLink)")
