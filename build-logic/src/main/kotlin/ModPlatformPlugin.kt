@@ -369,12 +369,14 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			}
 
 			val jarTask = tasks.named(targetName).map { it as Jar }
-			val currentVersion = stonecutter.current.version
+			val currentVersion = prop("deps.minecraft")
 			val deps = ext.dependencies
 
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
-			version = displayVersion.replace("snapshot", "snap").take(32)
+			if (displayVersion.length > 32) {
+				version = displayVersion.replace("snapshot", "snap").take(32)
+			}
 			val changelogFile = rootProject.file("CHANGELOG.md").readText()
 			val changelogLink = prop("publish.changelog.link")
 			changelog.set(changelogFile.replace("\n","\n\n")+"\n\n[Click here to open the **full changelog**]($changelogLink)")
@@ -382,7 +384,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			if (loader == "fabric") {
 				modLoaders.add("quilt")
 			}
-			if (loader == "forge" && currentVersion == "1.20" && additionalVersions.size <= 1) {
+			if (loader == "forge" && stonecutter.current.version == "1.20" && additionalVersions.size <= 1) {
 				modLoaders.add("neoforge")
 			}
 

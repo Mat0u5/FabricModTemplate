@@ -48,11 +48,8 @@ gradle.projectsEvaluated {
 		}
 
 		sorted.forEach { task ->
-			val loader = task.project.name.substringAfterLast('-')
-			val delayMs = 2000L;
 			task.doFirst {
-				logger.lifecycle("\n>>> [WAITING] ${delayMs/1000}s before uploading ${task.project.name}...")
-				Thread.sleep(delayMs)
+				logger.lifecycle("\n>>> Uploading ${task.project.name}...")
 			}
 		}
 	}
