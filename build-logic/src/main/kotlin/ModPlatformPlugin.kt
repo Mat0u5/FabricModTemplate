@@ -212,6 +212,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			val props = mapOf(
 				"version" to modVersion,
 				"minecraft" to mcVersion,
+				"sc_version" to stonecutter.current.version,
 				"id" to modId,
 				"name" to prop("mod.name"),
 				"group" to prop("mod.group"),
