@@ -5,13 +5,30 @@ package net.mat0u5.modid.platform.neoforge;
 /*import net.mat0u5.modid.platform.Platform;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.fml.loading.VersionInfo;
+import net.neoforged.fml.loading.FMLEnvironment;
 
 public class NeoforgePlatform implements Platform {
 
 	@Override
 	public boolean isModLoaded(String modId) {
-		return ModList.get().isLoaded(modId);
+		try {
+			//? if <= 1.21.6 {
+			/^if (FMLLoader.getLoadingModList() != null) {
+				return FMLLoader.getLoadingModList().getModFileById(modId) != null;
+			}
+			^///?} else {
+			if (FMLLoader.getCurrent().getLoadingModList() != null) {
+				return FMLLoader.getCurrent().getLoadingModList().getModFileById(modId) != null;
+			}
+			//?}
+		} catch (Throwable ignored) {}
+
+		try {
+			if (ModList.get() != null) {
+				return ModList.get().isLoaded(modId);
+			}
+		} catch (Throwable ignored) {}
+		return false;
 	}
 
 	@Override
@@ -27,6 +44,15 @@ public class NeoforgePlatform implements Platform {
 	@Override
 	public boolean isDevelopmentEnvironment() {
 		return !FMLLoader/^? if > 1.21.7 {^/.getCurrent()/^?}^/.isProduction();
+	}
+
+	@Override
+	public boolean isClient() {
+		//? if <= 1.21.6 {
+        /^return FMLEnvironment.dist.isClient();
+		^///?} else {
+        return FMLEnvironment.getDist().isClient();
+		//?}
 	}
 }
 *///?}

@@ -3,6 +3,7 @@ package net.mat0u5.modid.platform.fabric;
 //? fabric {
 
 import net.mat0u5.modid.platform.Platform;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class FabricPlatform implements Platform {
@@ -25,6 +26,11 @@ public class FabricPlatform implements Platform {
 	@Override
 	public boolean isDevelopmentEnvironment() {
 		return FabricLoader.getInstance().isDevelopmentEnvironment();
+	}
+
+	@Override
+	public boolean isClient() {
+		return FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT;
 	}
 }
 //?}
