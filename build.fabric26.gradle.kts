@@ -23,7 +23,7 @@ loom {
 	accessWidenerPath = rootProject.file("src/main/resources/aw/${stonecutter.current.version}.accesswidener")
 	runs.named("client") {
 		client()
-		ideConfigGenerated(true)
+		ideConfigGenerated(false)
 		runDir = "run/"
 		environment = "client"
 		programArgs("--username=Player")
@@ -31,7 +31,7 @@ loom {
 	}
 	runs.named("server") {
 		server()
-		ideConfigGenerated(true)
+		ideConfigGenerated(false)
 		runDir = "run/"
 		environment = "server"
 		configName = "Fabric Server"
@@ -55,11 +55,4 @@ dependencies {
 
 	implementation(libs.fabric.loader)
 	implementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
-}
-
-stonecutter {
-	replacements.string(current.parsed >= "1.21.11") {
-		replace("ResourceLocation", "Identifier")
-		replace("location()", "identifier()")
-	}
 }

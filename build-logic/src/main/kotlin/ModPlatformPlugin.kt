@@ -90,6 +90,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		val mcRange = prop("mod.mc_range").ifBlank { "[$mcVersion]" }
 
 		val stonecutter = extensions.getByType<StonecutterBuildExtension>()
+		configureStonecutterReplacements(stonecutter)
 
 		listOf(
 			"java",
@@ -448,5 +449,12 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		deps.optional.forEach { dep -> whenNotNull(dep.curseforge) { optional(it) } }
 		deps.incompatible.forEach { dep -> whenNotNull(dep.curseforge) { incompatible(it) } }
 		deps.embeds.forEach { dep -> whenNotNull(dep.curseforge) { embeds(it) } }
+	}
+
+	private fun configureStonecutterReplacements(stonecutter: StonecutterBuildExtension) {
+		stonecutter.replacements.string(stonecutter.eval(stonecutter.current.version, ">=1.21.11"), "!renames_1_21_11") {
+			replace("ResourceLocation", "Identifier")
+			replace("location()", "identifier()")
+		}
 	}
 }
