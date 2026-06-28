@@ -5,6 +5,7 @@ package net.mat0u5.modid.platform.forge;
 /*import net.mat0u5.modid.platform.Platform;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.LoadingModList;
 
 public class ForgePlatform implements Platform {

@@ -31,7 +31,12 @@ public class NeoforgeEventSubscriber {
 	^///?} else {
 	@SubscribeEvent
 	public static void onPlayerDamage(LivingDamageEvent.Post event) {
-		if (event.getEntity() instanceof ServerPlayer player && event.getNewDamage() > 0) {
+		//? if <= 26.1 {
+		/^var damage = event.getNewDamage();
+		^///?} else {
+		var damage = event.getInflictedDamage();
+		//?}
+		if (event.getEntity() instanceof ServerPlayer player && damage > 0) {
 			ExampleEventHandler.onPlayerHurt(player);
 		}
 	}
