@@ -161,7 +161,6 @@ publishMods {
 		val isDev = project.findProperty("publish.discord.dev")?.toString() == "true"
 		val version = versionPrefix+versionName+versionSuffix
 		val webhook = if (isDev) env("DISCORD_WEBHOOK_DEV") else env("DISCORD_WEBHOOK")
-		val changelogLink = project.findProperty("publish.changelog.link")?.toString()
 
 		discord("publishDiscordHeader") {
 			username = "Mat0u5"
@@ -184,14 +183,12 @@ publishMods {
 			if (!isDev) {
 				content = changelog.map { "# [ModId version `$version` is out!](https://modrinth.com/mod/modid/versions)\n" +
 					"### Changelog:\n" +
-					"```\n$it```\n\n" +
-					"[Click here to open the **full changelog**]($changelogLink)" }
+					"```\n$it```\n"  }
 			}
 			else {
 				content = changelog.map { "# [ModId version `$version` is out!](https://modrinth.com/mod/modid-dev/versions)\n" +
 					"### Changelog:\n" +
-					"```\n$it```\n\n" +
-					"[Click here to open the **full changelog**]($changelogLink)" }
+					"```\n$it```\n" }
 			}
 
 			setPlatformsAllFrom()
