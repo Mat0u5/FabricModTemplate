@@ -29,7 +29,7 @@ if exist "gradle.properties" (
 echo [3/7] Updating Java packages and files...
 set "OLD_PKG=src\main\java\net\mat0u5\modid"
 if exist "%OLD_PKG%" (
-    powershell -Command "Get-ChildItem -Path '%OLD_PKG%' -Recurse -Filter *.java | ForEach-Object { $content = Get-Content $_.FullName; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%' -replace 'ModId Name', '%MODNAME_READABLE%' -replace 'ModId', '%MODNAME_CLASS%'; Set-Content -Path $_.FullName -Value $content }"
+    powershell -Command "Get-ChildItem -Path '%OLD_PKG%' -Recurse -Filter *.java | ForEach-Object { $content = Get-Content $_.FullName; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%'; Set-Content -Path $_.FullName -Value $content }"
     ren "%OLD_PKG%" "%MODID%"
 ) else (
     echo   - Directory %OLD_PKG% not found, skipping.
