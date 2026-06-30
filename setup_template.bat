@@ -29,9 +29,11 @@ if exist "gradle.properties" (
 echo [3/7] Updating Java packages and files...
 set "OLD_PKG=src\main\java\net\mat0u5\modid"
 if exist "%OLD_PKG%" (
-    powershell -Command "Get-ChildItem -Path '%OLD_PKG%' -Recurse -Filter *.java | Where-Object { $_.FullName -match '\\main\\' } | ForEach-Object { $content = Get-Content $_.FullName; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%' -replace 'ModId Name', '%MODNAME_READABLE%' -replace 'ModId', '%MODNAME_CLASS%'; Set-Content -Path $_.FullName -Value $content }"
+    if exist "%OLD_PKG%\Main.java" (
+        powershell -Command "$content = Get-Content '%OLD_PKG%\Main.java'; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%' -replace 'ModId Name', '%MODNAME_READABLE%' -replace 'ModId', '%MODNAME_CLASS%'; Set-Content -Path '%OLD_PKG%\Main.java' -Value $content"
+    )
 
-    powershell -Command "Get-ChildItem -Path '%OLD_PKG%' -Recurse -Filter *.java | Where-Object { $_.FullName -notmatch '\\main\\' } | ForEach-Object { $content = Get-Content $_.FullName; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%'; Set-Content -Path $_.FullName -Value $content }"
+    powershell -Command "Get-ChildItem -Path '%OLD_PKG%' -Recurse -Filter *.java | Where-Object { $_.Name -ne 'Main.java' } | ForEach-Object { $content = Get-Content $_.FullName; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%'; Set-Content -Path $_.FullName -Value $content }"
 
     ren "%OLD_PKG%" "%MODID%"
 ) else (
