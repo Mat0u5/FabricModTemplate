@@ -69,9 +69,11 @@ dependencies {
 	annotationProcessor("org.spongepowered:mixin:${libs.versions.mixin.get()}:processor")
 	annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
 
-	compileOnly("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
-	implementation("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
-	"jarJar"("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
+	if (stonecutter.eval(stonecutter.current.version, "< 26.1")) {
+		compileOnly("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
+		implementation("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
+		"jarJar"("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
+	}
 	implementation(libs.moulberry.mixinconstraints)
 }
 
