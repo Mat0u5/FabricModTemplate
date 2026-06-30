@@ -14,9 +14,4 @@ public class Main {
 		LOGGER.info("Initializing {}", MOD_ID);
 		LOGGER.info("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
 	}
-
-	public static void onInitializeClient() {
-		LOGGER.info("Initializing {} Client", MOD_ID);
-		LOGGER.info("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
-	}
 }
