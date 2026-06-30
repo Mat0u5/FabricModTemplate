@@ -8,6 +8,7 @@ fun prop(key: String) = project.property(key) as String
 
 platform {
 	loader = "forge"
+	jarTask.set("jarJar")
 	dependencies {
 		required("minecraft") {
 			forgeVersionRange = "[${prop("deps.minecraft")}]"
@@ -56,8 +57,11 @@ repositories {
 	mavenCentral()
 }
 
-jarJar.register() {
-	archiveClassifier = null
+jarJar.register()
+
+tasks.named<Jar>("jarJar") {
+	archiveClassifier.set("")
+	dependsOn("jar")
 }
 
 dependencies {
@@ -78,6 +82,7 @@ tasks.withType<JavaCompile>().configureEach {
 	))
 }
 tasks.named<Jar>("jar") {
+	destinationDirectory.set(layout.buildDirectory.dir("intermediates/jar"))
 	manifest {
 		attributes["MixinConfigs"] = "${prop("mod.id")}.mixins.json"
 	}

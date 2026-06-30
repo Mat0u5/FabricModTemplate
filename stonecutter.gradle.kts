@@ -19,7 +19,7 @@ stonecutter active file(".sc_active_version")
 subprojects {
 	afterEvaluate {
 		val outputDir = rootProject.layout.projectDirectory.dir("output")
-		val task = (tasks.findByName("remapJar") ?: tasks.findByName("jar")) as? AbstractArchiveTask
+		val task = (tasks.findByName("jarJar") ?: tasks.findByName("remapJar") ?: tasks.findByName("jar")) as? AbstractArchiveTask
 		task?.doLast {
 			project.copy {
 				from(task.archiveFile)
