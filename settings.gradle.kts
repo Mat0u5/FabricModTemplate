@@ -86,6 +86,10 @@ stonecutter {
 
 			match("1.19", "fabric")
 			match("1.18", "fabric")
+			match("1.17", "fabric")
+			match("1.16", "fabric")
+			match("1.15", "fabric")
+			match("1.14", "fabric")
 		}
 		else if (env("GRADLE_ONLY_FORGE") == "true") {
 			match("26.2", "forge")
@@ -140,6 +144,10 @@ stonecutter {
 
 			match("1.19", "fabric", "forge")
 			match("1.18", "fabric")
+			match("1.17", "fabric")
+			match("1.16", "fabric")
+			match("1.15", "fabric")
+			match("1.14", "fabric")
 		}
 
 		if (env("GRADLE_ONLY_FORGE") == "true") {
