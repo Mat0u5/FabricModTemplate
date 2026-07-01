@@ -383,7 +383,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			from(
 				tasks.named(extension.jarTask.get())
 			)
-			into(rootProject.layout.buildDirectory.file("libs/$modVersion"))
+			into(rootProject.file("output/$modVersion"))
 			dependsOn("build")
 		}
 	}
