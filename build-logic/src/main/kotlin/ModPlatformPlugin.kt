@@ -20,6 +20,7 @@ import org.gradle.language.jvm.tasks.ProcessResources
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import java.util.*
 import javax.inject.Inject
+import kotlin.apply
 
 fun Project.prop(name: String): String = (findProperty(name) ?: "") as String
 
@@ -113,6 +114,12 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			}
 		)
 
+		var compileJavaVersion = extension.requiredJava.get()
+		if (compileJavaVersion < JavaVersion.VERSION_17) {
+			compileJavaVersion = JavaVersion.VERSION_17
+			configureDowngrade(extension, compileJavaVersion)
+		}
+
 		extension.dependencies {
 			required.maybeCreate("minecraft").apply {
 				modid.set("minecraft")
@@ -153,11 +160,60 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			extension.requiredJava.get(),
 			stonecutter
 		)
-		configureJava(stonecutter, extension.requiredJava.get())
+		configureJava(stonecutter, compileJavaVersion)
 		registerBuildAndCollectTask(extension, "$modVersionPrefix$modVersion$modVersionSuffix")
 		configurePublishing(extension, loader, stonecutter,
 			"$modVersionPrefix$modVersion$modVersionSuffix",
 			"$loader-$modVersionPrefix$modVersion$modVersionSuffix+$mcVersion")
+	}
+
+	private fun Project.configureDowngrade(extension: ModPlatformExtension, compileJavaVersion: JavaVersion) {
+
+		val requiredTarget = extension.requiredJava.get()
+		val needsDowngrade = requiredTarget < compileJavaVersion
+
+		val pluginsToApply = mutableListOf(
+			"java",
+			"me.modmuss50.mod-publish-plugin",
+			"idea"
+		)
+
+		if (needsDowngrade) {
+			pluginsToApply.add("xyz.wagyourtail.jvmdowngrader")
+		}
+
+		pluginsToApply.forEach { apply(plugin = it) }
+
+		if (needsDowngrade) {
+			extensions.configure<Any>("jvmdg") {
+				withGroovyBuilder {
+					setProperty("downgradeTo", requiredTarget)
+				}
+			}
+
+			val originalTarget = extension.jarTask.get()
+
+			tasks.named("downgradeJar") {
+				val originalTask = tasks.named(originalTarget, org.gradle.jvm.tasks.Jar::class.java)
+				dependsOn(originalTask)
+				withGroovyBuilder {
+					setProperty("inputFile", originalTask.flatMap { it.archiveFile })
+					setProperty("destinationDirectory", layout.buildDirectory.dir("../build/devlibs"))
+				}
+			}
+
+			tasks.named("shadeDowngradedApi") {
+				withGroovyBuilder {
+					setProperty("archiveClassifier", "")
+				}
+			}
+
+			tasks.named("build") {
+				dependsOn("shadeDowngradedApi")
+			}
+
+			extension.jarTask.set("shadeDowngradedApi")
+		}
 	}
 
 	private fun Project.configureJarTask(modId: String, loader: String) {
@@ -189,7 +245,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			dependsOn("kspKotlin")
 
 			filesMatching("*.mixins.json") {
-				val mixinJava = if (isForge) {
+				val mixinJava = if (isForge && requiredJava > JavaVersion.VERSION_17) {
 					"JAVA_17"
 				} else {
 					"JAVA_${requiredJava.majorVersion}"
