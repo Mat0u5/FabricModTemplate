@@ -51,7 +51,7 @@ fun RepositoryHandler.strictMaven(
 abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 	override fun apply(project: Project) = with(project) {
 		val inferredLoader = project.buildFile.name.substringAfter('.').replace(".gradle.kts", "")
-		val inferredLoaderIsFabric = inferredLoader == "fabric"
+		val inferredLoaderIsFabric = inferredLoader == "fabric-legacy"
 		val inferredLoaderIsForge = inferredLoader == "forge"
 
 		val extension = extensions.create("platform", ModPlatformExtension::class.java).apply {
