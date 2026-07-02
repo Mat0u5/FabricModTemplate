@@ -1,12 +1,16 @@
 import java.util.zip.GZIPInputStream
+
 plugins {
 	id("mod-platform")
 	id("net.minecraftforge.gradle")
 	id("net.minecraftforge.jarjar")
 }
-val unobfuscated = stonecutter.eval(stonecutter.current.version, ">=26.1")
 
 fun prop(key: String) = project.property(key) as String
+
+val unobfuscated = stonecutter.eval(stonecutter.current.version, ">=26.1")
+val legacyForge = stonecutter.eval(stonecutter.current.version, "<=1.20")
+val usesOfficialMappings = stonecutter.eval(stonecutter.current.version, ">=1.17")
 
 platform {
 	loader = "forge"
@@ -22,7 +26,7 @@ platform {
 }
 
 minecraft {
-	if (stonecutter.eval(stonecutter.current.version, ">=1.17")) {
+	if (usesOfficialMappings) {
 		mappings("official", prop("deps.minecraft"))
 	}
 	else {
@@ -48,6 +52,18 @@ minecraft {
 			args("--nogui")
 		}
 	}
+}
+
+val runJavaVersion = when {
+	stonecutter.eval(stonecutter.current.version, ">=26") -> 25
+	stonecutter.eval(stonecutter.current.version, ">=1.20.5") -> 21
+	// dev classes are compiled as J17 bytecode even for <=1.16
+	else -> 17
+}
+tasks.withType<JavaExec>().matching { it.name.startsWith("run") }.configureEach {
+	javaLauncher.set(javaToolchains.launcherFor {
+		languageVersion.set(JavaLanguageVersion.of(runJavaVersion))
+	})
 }
 
 sourceSets.configureEach {
@@ -86,8 +102,8 @@ dependencies {
 	"jarJar"(libs.moulberry.mixinconstraints)
 }
 
-if (!unobfuscated) {
-	val mappingsGroup = if (stonecutter.eval(stonecutter.current.version, ">=1.17")) "mappings_official" else "mappings_snapshot"
+if (legacyForge) {
+	val mappingsGroup = if (usesOfficialMappings) "mappings_official" else "mappings_snapshot"
 	val mappingsRepoDir = rootProject.file(".gradle/mavenizer/repo/net/minecraft/$mappingsGroup")
 
 	val extractMcpToSrg by tasks.registering {
@@ -95,12 +111,12 @@ if (!unobfuscated) {
 		outputs.file(outputFile)
 		doLast {
 			val mcVersion = prop("deps.minecraft")
-			val versionSuffix = if (stonecutter.eval(stonecutter.current.version, ">=1.17")) null else prop("deps.mappings_version")
+			val versionSuffix = if (usesOfficialMappings) null else prop("deps.mappings_version")
 
 			val matchDir = mappingsRepoDir.listFiles { f ->
 				f.isDirectory && f.name.startsWith(mcVersion) && (versionSuffix == null || f.name.endsWith(versionSuffix))
 			}?.firstOrNull()
-				?: throw GradleException("No mavenizer mappings dir found for $mcVersion under $mappingsRepoDir - list its contents to check the actual naming.")
+				?: throw GradleException("No mavenizer mappings dir found for $mcVersion under $mappingsRepoDir")
 
 			val gzFile = matchDir.listFiles { f -> f.name.endsWith("-map2srg.tsrg.gz") }?.firstOrNull()
 				?: throw GradleException("No map2srg.tsrg.gz found in $matchDir")
@@ -110,6 +126,7 @@ if (!unobfuscated) {
 			GZIPInputStream(gzFile.inputStream()).use { gz -> out.outputStream().use { os -> gz.copyTo(os) } }
 		}
 	}
+
 	tasks.withType<JavaCompile>().configureEach {
 		dependsOn(extractMcpToSrg)
 		val refMapFile = layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json")
@@ -123,6 +140,63 @@ if (!unobfuscated) {
 		))
 	}
 }
+else if (!unobfuscated) {
+	tasks.withType<JavaCompile>().configureEach {
+		options.compilerArgs.addAll(
+			listOf(
+				"-Amixin.refmap.name=${prop("mod.id")}.mixins.refmap.json",
+				"-AoutRefMapFile=${layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json").get().asFile}"
+			)
+		)
+	}
+}
+
+if (legacyForge) {
+	// ---------------------------------------------------------------------
+	// Production reobfuscation (official/MCP names -> SRG names).
+	//
+	// Forge <=1.20.x runs Minecraft under SRG names in production, but this
+	// setup compiles against official (or MCP) names and has no reobfJar
+	// task, so the finished jar would ship call sites like getDisplayName()
+	// into a runtime that only has m_5446_() -> NoSuchMethodError. The same
+	// map2srg.tsrg used for the refmap is exactly the mapping needed, and
+	// ForgeAutoRenamingTool (FART) applies it to the finished jar in place.
+	// Running in-place inside jarJar's doLast means everything downstream
+	// (downgradeJar/shadeDowngradedApi on <=1.16, buildAndCollect,
+	// publishing) automatically consumes the reobfuscated jar.
+	// ---------------------------------------------------------------------
+	val fart: Configuration by configurations.creating {
+		isTransitive = false
+	}
+
+	dependencies {
+		fart("net.minecraftforge:ForgeAutoRenamingTool:1.1.0:all")
+	}
+
+	tasks.named<Jar>("jarJar") {
+		dependsOn("extractMcpToSrg")
+		doLast {
+			val jarFile = archiveFile.get().asFile
+			val tmp = File(jarFile.parentFile, jarFile.name + ".reobf")
+			val tsrg = layout.buildDirectory.file("mappings/map2srg.tsrg").get().asFile
+			val javaBin = File(System.getProperty("java.home"), "bin/java")
+			val proc = ProcessBuilder(
+				javaBin.absolutePath, "-jar", fart.singleFile.absolutePath,
+				"--input", jarFile.absolutePath,
+				"--output", tmp.absolutePath,
+				"--map", tsrg.absolutePath,
+				"--ann-fix", "--ids-fix", "--src-fix", "--record-fix"
+			).redirectErrorStream(true).start()
+			val output = proc.inputStream.bufferedReader().readText() // drains pipe; also prevents deadlock
+			val exit = proc.waitFor()
+			if (exit != 0) throw GradleException("FART reobfuscation failed (exit $exit):\n$output")
+			logger.info(output)
+			jarFile.delete()
+			tmp.renameTo(jarFile)
+		}
+	}
+}
+
 tasks.named<Jar>("jar") {
 	destinationDirectory.set(layout.buildDirectory.dir("intermediates/jar"))
 	manifest {
