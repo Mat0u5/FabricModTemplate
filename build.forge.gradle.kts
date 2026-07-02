@@ -42,8 +42,8 @@ minecraft {
 		configureEach {
 			workingDir.convention(layout.projectDirectory.dir("run"))
 			systemProperty("forge.logging.console.level", "debug")
+			systemProperty("mixin.env.disableRefMap", "true")
 			args("--mixin.config=${prop("mod.id")}.mixins.json")
-			//ideaModule = null
 		}
 		register("client") {
 			args("--username", "Player")
@@ -152,19 +152,6 @@ else if (!unobfuscated) {
 }
 
 if (legacyForge) {
-	// ---------------------------------------------------------------------
-	// Production reobfuscation (official/MCP names -> SRG names).
-	//
-	// Forge <=1.20.x runs Minecraft under SRG names in production, but this
-	// setup compiles against official (or MCP) names and has no reobfJar
-	// task, so the finished jar would ship call sites like getDisplayName()
-	// into a runtime that only has m_5446_() -> NoSuchMethodError. The same
-	// map2srg.tsrg used for the refmap is exactly the mapping needed, and
-	// ForgeAutoRenamingTool (FART) applies it to the finished jar in place.
-	// Running in-place inside jarJar's doLast means everything downstream
-	// (downgradeJar/shadeDowngradedApi on <=1.16, buildAndCollect,
-	// publishing) automatically consumes the reobfuscated jar.
-	// ---------------------------------------------------------------------
 	val fart: Configuration by configurations.creating {
 		isTransitive = false
 	}
@@ -180,14 +167,19 @@ if (legacyForge) {
 			val tmp = File(jarFile.parentFile, jarFile.name + ".reobf")
 			val tsrg = layout.buildDirectory.file("mappings/map2srg.tsrg").get().asFile
 			val javaBin = File(System.getProperty("java.home"), "bin/java")
-			val proc = ProcessBuilder(
+			val args = mutableListOf(
 				javaBin.absolutePath, "-jar", fart.singleFile.absolutePath,
 				"--input", jarFile.absolutePath,
 				"--output", tmp.absolutePath,
 				"--map", tsrg.absolutePath,
 				"--ann-fix", "--ids-fix", "--src-fix", "--record-fix"
-			).redirectErrorStream(true).start()
-			val output = proc.inputStream.bufferedReader().readText() // drains pipe; also prevents deadlock
+			)
+			sourceSets["main"].compileClasspath.files
+				.filter { it.exists() && it.extension == "jar" }
+				.forEach { args += listOf("--lib", it.absolutePath) }
+
+			val proc = ProcessBuilder(args).redirectErrorStream(true).start()
+			val output = proc.inputStream.bufferedReader().readText()
 			val exit = proc.waitFor()
 			if (exit != 0) throw GradleException("FART reobfuscation failed (exit $exit):\n$output")
 			logger.info(output)
