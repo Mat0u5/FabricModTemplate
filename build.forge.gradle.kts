@@ -1,8 +1,10 @@
+import java.util.zip.GZIPInputStream
 plugins {
 	id("mod-platform")
 	id("net.minecraftforge.gradle")
 	id("net.minecraftforge.jarjar")
 }
+val unobfuscated = stonecutter.eval(stonecutter.current.version, ">=26.1")
 
 fun prop(key: String) = project.property(key) as String
 
@@ -20,7 +22,12 @@ platform {
 }
 
 minecraft {
-	mappings("official", prop("deps.minecraft"))
+	if (stonecutter.eval(stonecutter.current.version, ">=1.17")) {
+		mappings("official", prop("deps.minecraft"))
+	}
+	else {
+		mappings(prop("deps.mappings_channel"), prop("deps.mappings_version"))
+	}
 
 	val atFile = rootProject.file("src/main/resources/aw/${stonecutter.current.version}.cfg")
 	if (atFile.exists()) {
@@ -66,22 +73,55 @@ tasks.named<Jar>("jarJar") {
 
 dependencies {
 	implementation(minecraft.dependency("net.minecraftforge:forge:${prop("deps.forge")}"))
-	annotationProcessor("org.spongepowered:mixin:${libs.versions.mixin.get()}:processor")
-	annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
 
-	if (stonecutter.eval(stonecutter.current.version, "< 26.1")) {
+	if (!unobfuscated) {
+		annotationProcessor("org.spongepowered:mixin:${libs.versions.mixin.get()}:processor")
+		annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
+
 		compileOnly("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
 		implementation("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
 		"jarJar"("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
 	}
 	implementation(libs.moulberry.mixinconstraints)
+	"jarJar"(libs.moulberry.mixinconstraints)
 }
 
-tasks.withType<JavaCompile>().configureEach {
-	options.compilerArgs.addAll(listOf(
-		"-Amixin.refmap.name=${prop("mod.id")}.mixins.refmap.json",
-		"-AoutRefMapFile=${layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json").get().asFile}"
-	))
+if (!unobfuscated) {
+	val mappingsGroup = if (stonecutter.eval(stonecutter.current.version, ">=1.17")) "mappings_official" else "mappings_snapshot"
+	val mappingsRepoDir = rootProject.file(".gradle/mavenizer/repo/net/minecraft/$mappingsGroup")
+
+	val extractMcpToSrg by tasks.registering {
+		val outputFile = layout.buildDirectory.file("mappings/map2srg.tsrg")
+		outputs.file(outputFile)
+		doLast {
+			val mcVersion = prop("deps.minecraft")
+			val versionSuffix = if (stonecutter.eval(stonecutter.current.version, ">=1.17")) null else prop("deps.mappings_version")
+
+			val matchDir = mappingsRepoDir.listFiles { f ->
+				f.isDirectory && f.name.startsWith(mcVersion) && (versionSuffix == null || f.name.endsWith(versionSuffix))
+			}?.firstOrNull()
+				?: throw GradleException("No mavenizer mappings dir found for $mcVersion under $mappingsRepoDir - list its contents to check the actual naming.")
+
+			val gzFile = matchDir.listFiles { f -> f.name.endsWith("-map2srg.tsrg.gz") }?.firstOrNull()
+				?: throw GradleException("No map2srg.tsrg.gz found in $matchDir")
+
+			val out = outputFile.get().asFile
+			out.parentFile.mkdirs()
+			GZIPInputStream(gzFile.inputStream()).use { gz -> out.outputStream().use { os -> gz.copyTo(os) } }
+		}
+	}
+	tasks.withType<JavaCompile>().configureEach {
+		dependsOn(extractMcpToSrg)
+		val refMapFile = layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json")
+		val outTsrgFile = layout.buildDirectory.file("mappings/compileJava-mappings.tsrg")
+		options.compilerArgs.addAll(listOf(
+			"-AoutRefMapFile=${refMapFile.get().asFile}",
+			"-AreobfTsrgFile=${extractMcpToSrg.get().outputs.files.singleFile}",
+			"-AoutTsrgFile=${outTsrgFile.get().asFile}",
+			"-AmappingTypes=tsrg",
+			"-AdefaultObfuscationEnv=searge"
+		))
+	}
 }
 tasks.named<Jar>("jar") {
 	destinationDirectory.set(layout.buildDirectory.dir("intermediates/jar"))
