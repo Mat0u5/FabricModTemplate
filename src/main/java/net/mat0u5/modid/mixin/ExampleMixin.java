@@ -25,7 +25,11 @@ public class ExampleMixin {
 		System.out.println("[DowngraderTest] Success! Map: " + map);
 	}
 
-	//? if forge && <= 1.16 {
+	//? if forge && <= 1.14 {
+	/*@Inject(method = "loadAllWorlds", at = @At("RETURN"))
+	*///?} else if forge && <= 1.15 {
+	/*@Inject(method = "loadInitialChunks", at = @At("HEAD"))
+	*///?} else if forge && <= 1.16 {
 	/*@Inject(method = "func_240800_l__", at = @At("RETURN"))
 	*///?} else {
 	@Inject(method = "loadLevel", at = @At("RETURN"))

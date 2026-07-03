@@ -78,6 +78,14 @@ repositories {
 	maven(fg.minecraftLibsMaven)
 	strictMaven("https://api.modrinth.com/maven", "maven.modrinth") { name = "Modrinth" }
 	mavenCentral()
+	if (stonecutter.eval(stonecutter.current.version, "<1.13")) {
+		maven("https://maven.minecraftforge.net") {
+			metadataSources {
+				mavenPom()
+				artifact()
+			}
+		}
+	}
 }
 
 jarJar.register()
@@ -100,27 +108,36 @@ dependencies {
 	}
 	implementation(libs.moulberry.mixinconstraints)
 	"jarJar"(libs.moulberry.mixinconstraints)
+	if (stonecutter.eval(stonecutter.current.version, "<=1.14.4")) {
+		compileOnly("org.spongepowered:mixin:${libs.versions.mixin.get()}")
+	}
 }
 
 if (legacyForge) {
-	val mappingsGroup = if (usesOfficialMappings) "mappings_official" else "mappings_snapshot"
-	val mappingsRepoDir = rootProject.file(".gradle/mavenizer/repo/net/minecraft/$mappingsGroup")
+	val mappingsRepoBase = rootProject.file(".gradle/mavenizer/repo/net/minecraft")
+	val mappingsChannel = if (usesOfficialMappings) "official" else prop("deps.mappings_channel")
+	val mappingsVersion = if (usesOfficialMappings) prop("deps.minecraft") else prop("deps.mappings_version")
 
 	val extractMcpToSrg by tasks.registering {
 		val outputFile = layout.buildDirectory.file("mappings/map2srg.tsrg")
 		outputs.file(outputFile)
 		doLast {
 			val mcVersion = prop("deps.minecraft")
-			val versionSuffix = if (usesOfficialMappings) null else prop("deps.mappings_version")
+			val groupDir = File(mappingsRepoBase, "mappings_$mappingsChannel")
 
-			val matchDir = mappingsRepoDir.listFiles { f ->
-				f.isDirectory && f.name.startsWith(mcVersion) && (versionSuffix == null || f.name.endsWith(versionSuffix))
-			}?.firstOrNull()
-				?: throw GradleException("No mavenizer mappings dir found for $mcVersion under $mappingsRepoDir")
+			val candidates = groupDir.listFiles { d -> d.isDirectory }
+				?.filter { it.name.startsWith(mcVersion) || it.name.contains(mappingsVersion) }
+				?.mapNotNull { d -> d.listFiles { f -> f.name.endsWith("-map2srg.tsrg.gz") }?.firstOrNull() }
+				?: emptyList()
 
-			val gzFile = matchDir.listFiles { f -> f.name.endsWith("-map2srg.tsrg.gz") }?.firstOrNull()
-				?: throw GradleException("No map2srg.tsrg.gz found in $matchDir")
+			val gzFile = candidates.firstOrNull { it.parentFile.name.contains(mappingsVersion) }
+				?: candidates.firstOrNull()
+				?: throw GradleException(
+					"No map2srg.tsrg.gz for channel '$mappingsChannel', mappings '$mappingsVersion', mc '$mcVersion' in $groupDir.\n" +
+							"Available: ${groupDir.listFiles()?.joinToString { it.name } ?: "(group dir missing)"}"
+				)
 
+			logger.lifecycle("extractMcpToSrg[$mcVersion]: using ${gzFile.absolutePath}")
 			val out = outputFile.get().asFile
 			out.parentFile.mkdirs()
 			GZIPInputStream(gzFile.inputStream()).use { gz -> out.outputStream().use { os -> gz.copyTo(os) } }
@@ -138,16 +155,6 @@ if (legacyForge) {
 			"-AmappingTypes=tsrg",
 			"-AdefaultObfuscationEnv=searge"
 		))
-	}
-}
-else if (!unobfuscated) {
-	tasks.withType<JavaCompile>().configureEach {
-		options.compilerArgs.addAll(
-			listOf(
-				"-Amixin.refmap.name=${prop("mod.id")}.mixins.refmap.json",
-				"-AoutRefMapFile=${layout.buildDirectory.file("sourcesSets/main/${prop("mod.id")}.mixins.refmap.json").get().asFile}"
-			)
-		)
 	}
 }
 
