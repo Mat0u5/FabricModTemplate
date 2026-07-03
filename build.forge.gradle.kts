@@ -11,6 +11,7 @@ fun prop(key: String) = project.property(key) as String
 val unobfuscated = stonecutter.eval(stonecutter.current.version, ">=26.1")
 val legacyForge = stonecutter.eval(stonecutter.current.version, "<=1.20")
 val usesOfficialMappings = stonecutter.eval(stonecutter.current.version, ">=1.17")
+val modernRuntimeLibs = stonecutter.eval(stonecutter.current.version, ">=1.18")
 
 platform {
 	loader = "forge"
@@ -64,6 +65,9 @@ tasks.withType<JavaExec>().matching { it.name.startsWith("run") }.configureEach 
 	javaLauncher.set(javaToolchains.launcherFor {
 		languageVersion.set(JavaLanguageVersion.of(runJavaVersion))
 	})
+	if (stonecutter.eval(stonecutter.current.version, ">=1.17") && stonecutter.eval(stonecutter.current.version, "<=1.18")) {
+		jvmArgs("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED")
+	}
 }
 
 sourceSets.configureEach {
@@ -103,11 +107,19 @@ dependencies {
 		annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
 
 		compileOnly("io.github.llamalad7:mixinextras-common:${libs.versions.mixinextras.get()}")
-		implementation("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
-		"jarJar"("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
+		if (modernRuntimeLibs) {
+			implementation("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
+			"jarJar"("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinextras.get()}")
+		}
 	}
-	implementation(libs.moulberry.mixinconstraints)
-	"jarJar"(libs.moulberry.mixinconstraints)
+
+	if (modernRuntimeLibs) {
+		implementation(libs.moulberry.mixinconstraints)
+		"jarJar"(libs.moulberry.mixinconstraints)
+	} else {
+		compileOnly(libs.moulberry.mixinconstraints)
+	}
+
 	if (stonecutter.eval(stonecutter.current.version, "<=1.14.4")) {
 		compileOnly("org.spongepowered:mixin:${libs.versions.mixin.get()}")
 	}
