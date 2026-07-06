@@ -1,6 +1,6 @@
 plugins {
 	id("mod-platform")
-	id("net.fabricmc.fabric-loom")
+	id("net.fabricmc.fabric-loom-remap")
 }
 
 platform {
@@ -17,6 +17,7 @@ platform {
 
 loom {
 	accessWidenerPath = rootProject.file("src/main/resources/aw/${stonecutter.current.version}.accesswidener")
+	val isJbr = System.getProperty("java.vendor")?.contains("JetBrains", ignoreCase = true) == true
 	runs.named("client") {
 		client()
 		ideConfigGenerated(false)
@@ -24,6 +25,7 @@ loom {
 		environment = "client"
 		programArgs("--username=Player")
 		configName = "Fabric Client"
+		if (isJbr) vmArg("-XX:+AllowEnhancedClassRedefinition")
 	}
 	runs.named("server") {
 		server()
@@ -31,6 +33,7 @@ loom {
 		runDir = "run/"
 		environment = "server"
 		configName = "Fabric Server"
+		if (isJbr) vmArg("-XX:+AllowEnhancedClassRedefinition")
 	}
 }
 
@@ -41,6 +44,27 @@ repositories {
 
 dependencies {
 	minecraft("com.mojang:minecraft:${prop("deps.minecraft")}")
+	mappings(
+		loom.layered {
+			officialMojangMappings()
+		})
+	modImplementation(libs.fabric.loader)
+}
 
 	implementation(libs.fabric.loader)
+project.afterEvaluate {
+	val mixinJarPath = configurations.compileClasspath.get().files
+		.firstOrNull { it.name.contains("sponge-mixin") || (it.name.contains("mixin") && !it.name.contains("fabric-mixin-compile-extensions")) }
+		?.absolutePath
+
+	if (mixinJarPath != null) {
+		loom {
+			runs.named("client") {
+				vmArg("-javaagent:$mixinJarPath")
+			}
+			runs.named("server") {
+				vmArg("-javaagent:$mixinJarPath")
+			}
+		}
+	}
 }

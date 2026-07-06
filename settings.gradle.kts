@@ -29,16 +29,9 @@ stonecutter {
 		fun match(version: String, vararg loaders: String) {
 			loaders.forEach { loader ->
 				val buildscriptName = when {
-					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
-					loader == "forge" && (!version.equals("1.20") &&(version.startsWith("1.20") || version.startsWith("1.21") || version.startsWith("26"))) -> "build.forge21.gradle.kts"
+					version.startsWith("1.") && loader == "fabric" -> "build.fabric-legacy.gradle.kts"
 					else -> "build.$loader.gradle.kts"
 				}
-				/*
-				val buildscriptName = when {
-					version.startsWith("26") && loader == "fabric" -> "build.fabric26.gradle.kts"
-					else -> "build.$loader.gradle.kts"
-				}
-				 */
 
 				version("$version-$loader", version).buildscript = buildscriptName
 			}
@@ -59,7 +52,27 @@ stonecutter {
 			return null
 		}
 
-		if (env("GRADLE_ONLY_IMPORTANT_FABRIC") == "true") {
+		if (env("GRADLE_TEST") == "true") {
+			match("26.1", "forge")
+			match("1.21", "forge")
+			match("1.20.5", "forge")
+			match("1.20", "forge")
+
+			match("1.19", "forge")
+			match("1.18", "forge")
+			match("1.17", "forge")
+			match("1.16", "forge")
+			match("1.15", "forge")
+			match("1.14", "forge")
+			match("1.13", "forge")
+			match("1.12", "forge")
+			match("1.11", "forge")
+			match("1.10", "forge")
+			match("1.9", "forge")
+			match("1.8", "forge")
+			match("1.7", "forge")
+		}
+		else if (env("GRADLE_ONLY_IMPORTANT_FABRIC") == "true") {
 			// Main Fabric versions, this is the recommended setting for development
 			match("26.2", "fabric")
 			match("26.1", "fabric")
@@ -86,6 +99,10 @@ stonecutter {
 
 			match("1.19", "fabric")
 			match("1.18", "fabric")
+			match("1.17", "fabric")
+			match("1.16", "fabric")
+			match("1.15", "fabric")
+			match("1.14", "fabric")
 		}
 		else if (env("GRADLE_ONLY_FORGE") == "true") {
 			match("26.2", "forge")
@@ -103,6 +120,18 @@ stonecutter {
 			match("1.20", "forge")
 
 			match("1.19", "forge")
+			match("1.18", "forge")
+			match("1.17", "forge")
+			match("1.16", "forge")
+			match("1.15", "forge")
+			match("1.14", "forge")
+			match("1.13", "forge")
+			match("1.12", "forge")
+			match("1.11", "forge")
+			match("1.10", "forge")
+			match("1.9", "forge")
+			match("1.8", "forge")
+			match("1.7", "forge")
 		}
 		else if (env("GRADLE_ONLY_NEOFORGE") == "true") {
 			match("26.2", "neoforge")
@@ -139,10 +168,24 @@ stonecutter {
 			match("1.20", "fabric", "forge")
 
 			match("1.19", "fabric", "forge")
-			match("1.18", "fabric")
+			match("1.18", "fabric", "forge")
+			match("1.17", "fabric", "forge")
+			match("1.16", "fabric", "forge")
+			match("1.15", "fabric", "forge")
+			match("1.14", "fabric", "forge")
+			match("1.13", "forge")
+			match("1.12", "forge")
+			match("1.11", "forge")
+			match("1.10", "forge")
+			match("1.9", "forge")
+			match("1.8", "forge")
+			match("1.7", "forge")
 		}
 
-		if (env("GRADLE_ONLY_FORGE") == "true") {
+		if (env("GRADLE_TEST") == "true") {
+			vcsVersion = "1.21-forge"
+		}
+		else if (env("GRADLE_ONLY_FORGE") == "true") {
 			vcsVersion = "26.2-forge"
 		}
 		else if (env("GRADLE_ONLY_NEOFORGE") == "true") {

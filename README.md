@@ -12,6 +12,16 @@ multiversion and multiloader code.
 
 3. Replace and `src/main/resources/assets/icon.png` and `.idea/icon.png` with the mods icon.
 
+### Java and Gradle settings
+Project Java version: 25
+Gradle JVM: JetBrains Runtime 25
+
+### Info
+Forge < 1.15 does not support mixins by default.
+
+### Issues
+Forge client launch currently does not work in <= 1.15
+
 ## Compatibility Table
 
 | Fabric         | Forge            | NeoForge         |

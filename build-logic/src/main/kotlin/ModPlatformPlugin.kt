@@ -51,7 +51,7 @@ fun RepositoryHandler.strictMaven(
 abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 	override fun apply(project: Project) = with(project) {
 		val inferredLoader = project.buildFile.name.substringAfter('.').replace(".gradle.kts", "")
-		val inferredLoaderIsFabric = inferredLoader == "fabric"
+		val inferredLoaderIsFabric = inferredLoader == "fabric-legacy"
 		val inferredLoaderIsForge = inferredLoader == "forge"
 
 		val extension = extensions.create("platform", ModPlatformExtension::class.java).apply {
@@ -416,13 +416,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				dryRun = true
 			}
 
-			val isForge = loader == "forge"
-			val targetName = if (isForge && stonecutter.eval(stonecutter.current.version, "<=1.20")) {
-				"reobfJar"
-			} else {
-				ext.jarTask.get()
-			}
-
+			val targetName = ext.jarTask.get()
 			val jarTask = tasks.named(targetName).map { it as Jar }
 			val currentVersion = prop("deps.minecraft")
 			val deps = ext.dependencies
