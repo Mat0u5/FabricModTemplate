@@ -63,14 +63,6 @@ stonecutter {
 			match("1.17", "forge")
 			match("1.16", "forge")
 			match("1.15", "forge")
-			match("1.14", "forge")
-			match("1.13", "forge")
-			match("1.12", "forge")
-			match("1.11", "forge")
-			match("1.10", "forge")
-			match("1.9", "forge")
-			match("1.8", "forge")
-			match("1.7", "forge")
 		}
 		else if (env("GRADLE_ONLY_IMPORTANT_FABRIC") == "true") {
 			// Main Fabric versions, this is the recommended setting for development
@@ -124,14 +116,6 @@ stonecutter {
 			match("1.17", "forge")
 			match("1.16", "forge")
 			match("1.15", "forge")
-			match("1.14", "forge")
-			match("1.13", "forge")
-			match("1.12", "forge")
-			match("1.11", "forge")
-			match("1.10", "forge")
-			match("1.9", "forge")
-			match("1.8", "forge")
-			match("1.7", "forge")
 		}
 		else if (env("GRADLE_ONLY_NEOFORGE") == "true") {
 			match("26.2", "neoforge")
@@ -172,14 +156,7 @@ stonecutter {
 			match("1.17", "fabric", "forge")
 			match("1.16", "fabric", "forge")
 			match("1.15", "fabric", "forge")
-			match("1.14", "fabric", "forge")
-			match("1.13", "forge")
-			match("1.12", "forge")
-			match("1.11", "forge")
-			match("1.10", "forge")
-			match("1.9", "forge")
-			match("1.8", "forge")
-			match("1.7", "forge")
+			match("1.14", "fabric")
 		}
 
 		if (env("GRADLE_TEST") == "true") {
