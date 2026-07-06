@@ -44,11 +44,6 @@ repositories {
 
 dependencies {
 	minecraft("com.mojang:minecraft:${prop("deps.minecraft")}")
-	mappings(
-		loom.layered {
-			officialMojangMappings()
-		})
-	modImplementation(libs.fabric.loader)
 
 	implementation(libs.fabric.loader)
 }

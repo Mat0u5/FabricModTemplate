@@ -51,7 +51,6 @@ dependencies {
 	modImplementation(libs.fabric.loader)
 }
 
-	implementation(libs.fabric.loader)
 project.afterEvaluate {
 	val mixinJarPath = configurations.compileClasspath.get().files
 		.firstOrNull { it.name.contains("sponge-mixin") || (it.name.contains("mixin") && !it.name.contains("fabric-mixin-compile-extensions")) }
