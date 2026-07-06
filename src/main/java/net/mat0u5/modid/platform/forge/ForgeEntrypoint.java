@@ -6,6 +6,8 @@ package net.mat0u5.modid.platform.forge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+//? if <= 1.9
+//import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = Main.MOD_ID, name = Main.MOD_ID, version = "${version}", acceptableRemoteVersions = "*")
 public class ForgeEntrypoint {
@@ -18,6 +20,8 @@ public class ForgeEntrypoint {
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			Main.onInitializeClient();
 		}
+		//? if <= 1.9
+		//MinecraftForge.EVENT_BUS.register(new ForgeEventSubscriber());
 	}
 }
 ^///?} else {
