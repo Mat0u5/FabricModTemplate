@@ -245,6 +245,13 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			dependsOn("kspKotlin")
 
 			filesMatching("*.mixins.json") {
+				val needsRefmap = isForge && stonecutter.eval(stonecutter.current.version, "<=1.20") // legacyForge
+				if (!needsRefmap) {
+					filter { line: String ->
+						if (line.trimStart().startsWith("\"refmap\"")) null else line
+					}
+				}
+
 				val mixinJava = if (isForge && requiredJava > JavaVersion.VERSION_17) {
 					"JAVA_17"
 				} else {
@@ -301,17 +308,17 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				isNeoForge -> {
 					val usesLegacyToml = stonecutter.eval(stonecutter.current.version, "<=1.20.3")
 					if (usesLegacyToml) {
-						filesMatching("META-INF/mods.toml") { expand(props) }
-						exclude("META-INF/neoforge.mods.toml", "fabric.mod.json", "aw/*.accesswidener", ".cache", "pack.mcmeta")
+						filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
+						exclude("fabric.mod.json", "aw/*.accesswidener", "aw/*.classtweaker", ".cache", "pack.mcmeta")
 					} else {
 						filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
-						exclude("META-INF/mods.toml", "fabric.mod.json", "aw/*.accesswidener", ".cache", "pack.mcmeta")
+						exclude("META-INF/mods.toml", "fabric.mod.json", "aw/*.accesswidener", "aw/*.classtweaker", ".cache", "pack.mcmeta")
 					}
 				}
 
 				isForge -> {
 					filesMatching("META-INF/mods.toml") { expand(props) }
-					exclude("META-INF/neoforge.mods.toml", "fabric.mod.json", "aw/*.accesswidener", ".cache")
+					exclude("META-INF/neoforge.mods.toml", "fabric.mod.json", "aw/*.accesswidener", "aw/*.classtweaker", ".cache")
 				}
 			}
 		}
