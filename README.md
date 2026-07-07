@@ -22,6 +22,10 @@ Forge < 1.15 does not support mixins by default.
 ### Issues
 Forge client launch currently does not work in <= 1.15
 
+### Fabric AW/CT Loader versions
+`accessWidener v2` - Fabric Loader 0.12.0+
+`classTweaker v1` - Fabric Loader 0.18.0+
+
 ## Compatibility Table
 
 | Fabric         | Forge            | NeoForge         |
