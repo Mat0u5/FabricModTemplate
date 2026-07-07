@@ -135,7 +135,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 				required.maybeCreate("fabricloader").apply {
 					modid.set("fabricloader")
-					versionRange.set(prop("mod.loader_range").ifBlank { "*" })
+					versionRange.set(">=0.12.0")
 				}
 
 				required.maybeCreate("fabric-api").apply {
