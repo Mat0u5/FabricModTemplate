@@ -84,13 +84,15 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		val isForge = loader == "forge"
 
 		val modId = prop("mod.id")
-		val modVersion = prop("mod.version")
-		val modVersionPrefix = prop("mod.version_prefix")
-		val modVersionSuffix = prop("mod.version_suffix")
+		val originalModVersion = prop("mod.version_prefix")+prop("mod.version")+prop("mod.version_suffix")
+		var modVersion = prop("mod.version_prefix")+prop("mod.version")+prop("mod.version_suffix")
 		val mcVersion = prop("deps.minecraft")
 		var mcRange = prop("mod.mc_range").ifBlank { "[$mcVersion]" }
 		if (env("BUILD_UNBOUND_VERSION_RANGE") == "true") {
 			mcRange = "*"
+		}
+		val isNoDowngraderTaskRequested = gradle.startParameter.taskNames.any {
+			it.contains("buildAndCollectNoDowngrader", ignoreCase = true)
 		}
 
 		val stonecutter = extensions.getByType<StonecutterBuildExtension>()
@@ -101,8 +103,6 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			"me.modmuss50.mod-publish-plugin",
 			"idea",
 		).forEach { apply(plugin = it) }
-
-		version = "$modVersionPrefix$modVersion$modVersionSuffix+$mcVersion-$loader"
 
 		extension.requiredJava.set(
 			when {
@@ -117,8 +117,17 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		var compileJavaVersion = extension.requiredJava.get()
 		if (compileJavaVersion < JavaVersion.VERSION_17) {
 			compileJavaVersion = JavaVersion.VERSION_17
-			configureDowngrade(extension, compileJavaVersion)
+			if (!isNoDowngraderTaskRequested) {
+				configureDowngrade(extension, compileJavaVersion)
+			}
+			else {
+				modVersion += "-nodowngrader"
+			}
 		}
+
+		val fullVersion = "$modVersion+$mcVersion-$loader"
+		val publishDisplayVersion = "$loader-$modVersion+$mcVersion"
+		version = fullVersion
 
 		extension.dependencies {
 			required.maybeCreate("minecraft").apply {
@@ -148,17 +157,16 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 			isNeoForge,
 			isForge,
 			modId,
-			"$modVersionPrefix$modVersion$modVersionSuffix",
+			modVersion,
 			mcVersion,
 			extension,
 			extension.requiredJava.get(),
 			stonecutter
 		)
 		configureJava(stonecutter, compileJavaVersion)
-		registerBuildAndCollectTask(extension, "$modVersionPrefix$modVersion$modVersionSuffix")
-		configurePublishing(extension, loader, stonecutter,
-			"$modVersionPrefix$modVersion$modVersionSuffix",
-			"$loader-$modVersionPrefix$modVersion$modVersionSuffix+$mcVersion")
+		registerBuildAndCollectTask(extension, modVersion)
+		registerBuildAndCollectNoDowngraderTask(extension, originalModVersion)
+		configurePublishing(extension, loader, stonecutter, modVersion, publishDisplayVersion)
 	}
 
 	private fun Project.configureDowngrade(extension: ModPlatformExtension, compileJavaVersion: JavaVersion) {
@@ -386,6 +394,17 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				tasks.named(extension.jarTask.get())
 			)
 			into(rootProject.file("output/$modVersion"))
+			dependsOn("build")
+		}
+	}
+
+	private fun Project.registerBuildAndCollectNoDowngraderTask(extension: ModPlatformExtension, modVersion: String) {
+		tasks.register<Copy>("buildAndCollectNoDowngrader") {
+			group = "build"
+			from(
+				tasks.named(extension.jarTask.get())
+			)
+			into(rootProject.file("output/$modVersion-nodowngrader"))
 			dependsOn("build")
 		}
 	}
