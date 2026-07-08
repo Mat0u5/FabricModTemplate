@@ -450,6 +450,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 
 			file.set(jarTask.flatMap(Jar::getArchiveFile))
 			type = releaseType
+			version = displayVersion
 			if (displayVersion.length > 32) {
 				version = displayVersion.replace("snapshot", "snap").take(32)
 			}
