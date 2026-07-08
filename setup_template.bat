@@ -21,7 +21,7 @@ if exist ".env.template" (
 
 echo [2/7] Updating gradle.properties...
 if exist "gradle.properties" (
-    powershell -Command "(Get-Content gradle.properties) -replace 'mod\.id\s*=.*', 'mod.id=%MODID%' -replace 'mod\.name\s*=.*', 'mod.name=%MODNAME_READABLE%' -replace 'ModId Name', '%MODNAME_READABLE%' -replace 'ModId', '%MODNAME_CLASS%' | Set-Content gradle.properties"
+    powershell -Command "(Get-Content gradle.properties) -replace 'mod\.id\s*=.*', 'mod.id=%MODID%' -replace 'mod\.name\s*=.*', 'mod.name=%MODNAME_READABLE%' -creplace 'ModId Name', '%MODNAME_READABLE%' -creplace 'modid', '%MODID%' -creplace 'ModId', '%MODNAME_CLASS%' | Set-Content gradle.properties"
 ) else (
     echo   - gradle.properties not found, skipping.
 )
@@ -30,7 +30,7 @@ echo [3/7] Updating Java packages and files...
 set "OLD_PKG=src\main\java\net\mat0u5\modid"
 if exist "%OLD_PKG%" (
     if exist "%OLD_PKG%\Main.java" (
-        powershell -Command "$content = Get-Content '%OLD_PKG%\Main.java'; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%' -replace 'ModId Name', '%MODNAME_READABLE%' -replace 'ModId', '%MODNAME_CLASS%'; Set-Content -Path '%OLD_PKG%\Main.java' -Value $content"
+        powershell -Command "$content = Get-Content '%OLD_PKG%\Main.java'; $content = $content -creplace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%' -creplace 'ModId Name', '%MODNAME_READABLE%' -creplace 'modid', '%MODID%' -creplace 'ModId', '%MODNAME_CLASS%'; Set-Content -Path '%OLD_PKG%\Main.java' -Value $content"
     )
 
     powershell -Command "Get-ChildItem -Path '%OLD_PKG%' -Recurse -Filter *.java | Where-Object { $_.Name -ne 'Main.java' } | ForEach-Object { $content = Get-Content $_.FullName; $content = $content -replace 'net\.mat0u5\.modid', 'net.mat0u5.%MODID%'; Set-Content -Path $_.FullName -Value $content }"
@@ -56,7 +56,7 @@ if exist "%RES_DIR%" (
 
 echo [5/7] Updating stonecutter.gradle.kts...
 if exist "stonecutter.gradle.kts" (
-    powershell -Command "(Get-Content 'stonecutter.gradle.kts') -replace 'ModId Name', '%MODNAME_READABLE%' -replace 'ModId', '%MODNAME_CLASS%' -replace 'modid', '%MODID%' | Set-Content 'stonecutter.gradle.kts'"
+    powershell -Command "(Get-Content 'stonecutter.gradle.kts') -creplace 'ModId Name', '%MODNAME_READABLE%' -creplace 'modid', '%MODID%' -creplace 'ModId', '%MODNAME_CLASS%' | Set-Content 'stonecutter.gradle.kts'"
 ) else (
     echo   - stonecutter.gradle.kts not found, skipping.
 )
