@@ -18,7 +18,7 @@ public class FabricEventSubscriber {
 		/*WorldTickCallback.EVENT.register((level) -> {
 			Main.LOGGER.info("TICK");
 		});
-		*///?} else if <= 1.19 {
+		*///?} else if <= 1.19.4 {
 		/*ServerPlayerEvents.ALLOW_DEATH.register((entity, source, damageTaken) -> {
 			if (entity instanceof ServerPlayer && damageTaken > 0) {
 				ExampleEventHandler.onPlayerHurt((ServerPlayer) entity);

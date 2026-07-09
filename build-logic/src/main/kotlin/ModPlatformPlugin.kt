@@ -148,7 +148,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				}
 
 				required.maybeCreate("fabric-api").apply {
-					val legacyFabricApi = stonecutter.eval(stonecutter.current.version, "<=1.19")
+					val legacyFabricApi = stonecutter.eval(stonecutter.current.version, "<=1.19.4")
 					modid.set(if (legacyFabricApi) "fabric" else "fabric-api")
 					versionRange.set(prop("mod.api_range").ifBlank { "*" })
 				}
