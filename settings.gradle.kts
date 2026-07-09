@@ -58,7 +58,8 @@ stonecutter {
 			match("1.20.5", "forge")
 			match("1.20", "forge")
 
-			match("1.19", "forge")
+			match("1.19.4", "forge")
+			match("1.19.2", "forge")
 			match("1.18", "forge")
 			match("1.17", "forge")
 			match("1.16", "forge")
@@ -89,7 +90,8 @@ stonecutter {
 			match("1.20.2", "fabric")
 			match("1.20", "fabric")
 
-			match("1.19", "fabric")
+			match("1.19.4", "fabric")
+			match("1.19.2", "fabric")
 			match("1.18", "fabric")
 			match("1.17", "fabric")
 			match("1.16", "fabric")
@@ -111,7 +113,8 @@ stonecutter {
 			match("1.20.5", "forge")
 			match("1.20", "forge")
 
-			match("1.19", "forge")
+			match("1.19.4", "forge")
+			match("1.19.2", "forge")
 			match("1.18", "forge")
 			match("1.17", "forge")
 			match("1.16", "forge")
@@ -151,7 +154,9 @@ stonecutter {
 			match("1.20.2", "fabric")
 			match("1.20", "fabric", "forge")
 
-			match("1.19", "fabric", "forge")
+			match("1.19.4", "fabric", "forge")
+			match("1.19.2", "fabric", "forge")
+
 			match("1.18", "fabric", "forge")
 			match("1.17", "fabric", "forge")
 			match("1.16", "fabric", "forge")
