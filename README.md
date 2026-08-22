@@ -1,5 +1,7 @@
 # Stonecutter Multi-Platform Mod Template
 
+This is a heavily modified older version of this template - https://github.com/rotgruengelb/stonecutter-mod-template
+
 A multi-platform Minecraft mod template for **Fabric**, **Forge** and **NeoForge**,
 using [Stonecutter](https://stonecutter.kikugie.dev/) for
 multiversion and multiloader code.
