@@ -14,7 +14,7 @@ multiversion and multiloader code.
 
 3. Replace `src/main/resources/icon.png` (and optionally add `.idea/icon.png`) with the mods icon.
 
-4. Set the desired publishing environment in ModPlatformPlugin.kt for CurseForge and Modrinth.
+4. Set the desired publishing environment in ModPlatformPlugin.kt for CurseForge and Modrinth (client and/or server).
 
 ### Java and Gradle settings
 Project Java version: 25
