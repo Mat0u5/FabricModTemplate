@@ -11,6 +11,7 @@ fun prop(key: String) = project.property(key) as String
 val unobfuscated = stonecutter.eval(stonecutter.current.version, ">=26.1")
 val legacyForge = stonecutter.eval(stonecutter.current.version, "<=1.20")
 val usesOfficialMappings = stonecutter.eval(stonecutter.current.version, ">=1.16")
+val mergedDevOutput = stonecutter.eval(stonecutter.current.version, ">=1.17")
 val modernRuntimeLibs = stonecutter.eval(stonecutter.current.version, ">=1.18")
 val hasMixins = stonecutter.eval(stonecutter.current.version, ">=1.15")
 
@@ -48,6 +49,9 @@ minecraft {
 				systemProperty("mixin.env.disableRefMap", "true")
 				args("--mixin.config=${prop("mod.id")}.mixins.json")
 			}
+			@Suppress("UNCHECKED_CAST")
+			val modConfigs = mods as NamedDomainObjectContainer<net.minecraftforge.gradle.SlimeLauncherOptionsNested.ModConfig>
+			modConfigs.maybeCreate(prop("mod.id")).source(sourceSets["main"])
 		}
 		register("client") {
 			args("--username", "Player")
@@ -72,7 +76,7 @@ tasks.withType<JavaExec>().matching { it.name.startsWith("run") }.configureEach 
 		jvmArgs("--add-opens=java.base/java.lang.invoke=ALL-UNNAMED")
 	}
 }
-if (usesOfficialMappings) {
+if (mergedDevOutput) {
 	sourceSets.configureEach {
 		val dir = layout.buildDirectory.dir("sourcesSets/$name")
 		output.setResourcesDir(dir)
