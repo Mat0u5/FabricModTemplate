@@ -8,21 +8,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-import java.util.Map;
-
 @Mixin(MinecraftServer.class)
 @MixinEnvironment(type = MixinEnvironment.Env.MAIN)
 public class ExampleMixin {
-
+// Mixins were not available yet in forge <= 1.14.
+//? if forge && <= 1.14 {
+//?} else {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void serverInit(CallbackInfo ci) {
-		Main.LOGGER.info("[{}] Server Init!", Main.MOD_ID);
-		List<String> list = List.of("Test", "Downgrader");
-		Map<String, String> map = Map.of("Key", "Value");
-
-		System.out.println("[DowngraderTest] Success! List: " + list);
-		System.out.println("[DowngraderTest] Success! Map: " + map);
+		Main.serverInit((MinecraftServer) (Object) this);
 	}
 
 	//? if forge && <= 1.15 {
@@ -31,7 +25,7 @@ public class ExampleMixin {
 	@Inject(method = "loadLevel", at = @At("RETURN"))
 	//?}
 	private void afterLoadLevel(CallbackInfo ci) {
-		Main.LOGGER.info("[{}] Level Loaded!", Main.MOD_ID);
+		Main.levelLoad();
 	}
-
+//?}
 }
