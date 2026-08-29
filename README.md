@@ -12,7 +12,7 @@ multiversion and multiloader code.
 
 2. Change gradle.properties as necessary
 
-3. Replace and `src/main/resources/assets/icon.png` and `.idea/icon.png` with the mods icon.
+3. Replace `src/main/resources/icon.png` (and optionally add `.idea/icon.png`) with the mods icon.
 
 4. Set the desired publishing environment in ModPlatformPlugin.kt for CurseForge and Modrinth.
 

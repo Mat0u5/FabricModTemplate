@@ -7,10 +7,14 @@ package net.mat0u5.modid.platform.forge;
 /^¹import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStartedEvent;
 ¹^///?} else {
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 //?}
 //? if <= 1.9
 //import net.minecraftforge.common.MinecraftForge;
@@ -28,6 +32,16 @@ public class ForgeEntrypoint {
 		}
 		//? if <= 1.9
 		//MinecraftForge.EVENT_BUS.register(new ForgeEventSubscriber());
+	}
+
+	@Mod.EventHandler
+	public void serverStarting(FMLServerStartingEvent event) {
+		Main.serverInit(event.getServer());
+	}
+
+	@Mod.EventHandler
+	public void serverStarted(FMLServerStartedEvent event) {
+		Main.levelLoad();
 	}
 }
 ^///?} else {

@@ -157,7 +157,7 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		}
 
 		configureFletchingTable()
-		configureJarTask(modId, loader)
+		configureJarTask(modId, loader, stonecutter)
 		configureIdea()
 		configureProcessResources(
 			isFabric,
@@ -225,8 +225,11 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		}
 	}
 
-	private fun Project.configureJarTask(modId: String, loader: String) {
+	private fun Project.configureJarTask(modId: String, loader: String, stonecutter: StonecutterBuildExtension) {
 		val isForge = loader == "forge"
+		val needsFmlAt = isForge
+			&& stonecutter.eval(stonecutter.current.version, "<=1.12")
+			&& rootProject.file("src/main/resources/aw/${stonecutter.current.version}.cfg").exists()
 
 		tasks.withType<Jar>().configureEach {
 			archiveBaseName.set(modId)
@@ -234,6 +237,11 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 				manifest.attributes(
 					"MixinConfigs" to "${modId}.mixins.json"
 				)
+				if (needsFmlAt) {
+					manifest.attributes(
+						"FMLAT" to "accesstransformer.cfg"
+					)
+				}
 			}
 		}
 	}
