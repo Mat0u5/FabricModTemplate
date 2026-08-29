@@ -11,9 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftServer.class)
 @MixinEnvironment(type = MixinEnvironment.Env.MAIN)
 public class ExampleMixin {
-// Mixins were not available yet in forge <= 1.14.
-//? if forge && <= 1.14 {
-//?} else {
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void serverInit(CallbackInfo ci) {
 		Main.serverInit((MinecraftServer) (Object) this);
@@ -27,5 +24,4 @@ public class ExampleMixin {
 	private void afterLoadLevel(CallbackInfo ci) {
 		Main.levelLoad();
 	}
-//?}
 }
